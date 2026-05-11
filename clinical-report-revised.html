@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>공개보고서</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Bebas+Neue&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(160deg,#fdf9f4 0%,#f5efea 100%);color:#1a1e3a;min-height:100vh;padding-bottom:80px;}
+.hd{background:linear-gradient(180deg,rgba(30,60,120,0.07) 0%,transparent 100%);border-bottom:1px solid rgba(30,60,120,0.13);padding:32px 20px 24px;text-align:center;}
+.hd-eyebrow{font-size:11px;letter-spacing:6px;color:rgba(40,70,160,0.45);margin-bottom:10px;}
+.hd-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(34px,8vw,60px);letter-spacing:5px;color:#1a1e3a;line-height:1;margin-bottom:6px;}
+.hd-title span{color:#2050c8;}
+.hd-sub{font-size:12px;color:rgba(40,50,80,0.85);letter-spacing:2px;}
+.hd-badge{display:inline-flex;align-items:center;gap:6px;margin-top:12px;padding:7px 16px;background:rgba(32,80,200,0.06);border:1px solid rgba(32,80,200,0.16);border-radius:6px;font-size:12px;color:rgba(20,50,160,1);}
+.topbar{background:rgba(255,255,255,0.97);border-bottom:1px solid rgba(32,80,200,0.12);display:flex;align-items:center;justify-content:space-between;padding:0 14px;height:50px;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(32,80,200,0.08);gap:6px;}
+.topbar-left{display:flex;align-items:center;gap:7px;}
+.mode-toggle{display:flex;align-items:center;background:rgba(32,80,200,0.06);border-radius:20px;padding:3px;gap:2px;border:1px solid rgba(32,80,200,0.15);}
+.mode-btn{border:none;border-radius:16px;padding:4px 9px;font-family:'Noto Sans KR',sans-serif;font-size:.7rem;font-weight:600;cursor:pointer;color:rgba(32,80,200,0.5);background:transparent;white-space:nowrap;}
+.mode-btn.active-test{background:#1976d2;color:#fff;}
+.mode-btn.active-server{background:#388e3c;color:#fff;}
+.tab-btns{display:flex;gap:3px;}
+.tab-btn{background:transparent;border:1px solid rgba(32,80,200,0.15);color:rgba(32,80,200,0.6);border-radius:6px;padding:5px 10px;font-family:'Noto Sans KR',sans-serif;font-size:.76rem;cursor:pointer;font-weight:500;white-space:nowrap;}
+.tab-btn.active{background:#2050c8;color:#fff;border-color:#2050c8;font-weight:700;}
+.topbar-right{display:flex;gap:4px;}
+.icon-btn{background:transparent;border:1px solid rgba(32,80,200,0.2);color:rgba(32,80,200,0.7);border-radius:6px;padding:5px 9px;font-size:.76rem;font-weight:700;cursor:pointer;}
+.icon-btn.primary{background:linear-gradient(135deg,#2a5cd8,#1a3ab0);color:#fff;border:none;}
+.server-connected-badge{display:none;align-items:center;gap:4px;position:absolute;top:10px;right:14px;z-index:10;}
+.server-connected-badge.visible{display:flex;}
+.server-connected-badge .scb-label{font-size:10px;font-weight:400;color:rgba(40,50,80,0.4);letter-spacing:.2px;}
+.server-connected-badge .scb-dot{width:6px;height:6px;border-radius:50%;background:#7ec88a;flex-shrink:0;transition:background .4s;}
+.server-connected-badge.state-ok .scb-dot{background:#7ec88a;}
+.server-connected-badge.state-warn .scb-dot{background:#e6b84a;}
+.server-connected-badge.state-error .scb-dot{background:#e07a7a;}
+.server-connected-badge.state-ok .scb-label{color:rgba(40,80,50,0.45);}
+.server-connected-badge.state-warn .scb-label{color:rgba(140,90,20,0.6);}
+.server-connected-badge.state-error .scb-label{color:rgba(160,40,40,0.6);}
+.server-connected-badge .scb-lock{font-size:11px;line-height:1;opacity:0.4;}
+
+.page{display:none !important;}.page.active{display:block !important;}
+.con{max-width:720px;margin:0 auto;padding:22px 16px 16px;}
+.sec{margin-bottom:18px;}
+.sec-lbl{font-size:10px;font-weight:700;letter-spacing:3px;color:#1a3a9e;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.sec-lbl::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(32,80,200,0.2),transparent);}.sec-lbl.no-after::after{display:none;}
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(0,0,30,0.07),transparent);margin:2px 0 16px;}
+.fld{display:flex;flex-direction:column;gap:5px;}
+.lbl{font-size:12px;font-weight:600;color:rgba(20,30,70,0.9);}
+input[type=text],input[type=number],input[type=date],textarea{background:#fff;border:1px solid rgba(0,0,20,0.18);border-radius:6px;padding:9px 12px;font-family:'Noto Sans KR',sans-serif;font-size:15px;color:#0f1428;outline:none;width:100%;}
+input::placeholder,textarea::placeholder{color:rgba(100,110,140,0.5);}
+textarea{resize:none;min-height:58px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;}
+.rg{display:flex;gap:7px;flex-wrap:wrap;}
+.rb{flex:1;position:relative;min-width:56px;}
+.rb input[type=radio]{position:absolute;opacity:0;width:100%;height:100%;top:0;left:0;margin:0;cursor:pointer;z-index:1;}
+.rb label{display:flex;align-items:center;justify-content:center;padding:9px 5px;background:#f0f2f8;border:1.5px solid rgba(0,0,20,0.12);border-radius:6px;font-size:12px;font-weight:600;color:rgba(20,30,70,0.75);cursor:pointer;min-height:42px;text-align:center;line-height:1.3;}
+.rb input[type=radio]:checked+label{background:rgba(32,80,200,0.2);border-color:rgba(32,80,200,0.6);color:#0a1e6e;font-weight:800;}
+.stats-tbl{width:100%;border-collapse:collapse;font-size:11px;}
+.stats-tbl th{background:#2050c8;color:#fff;font-weight:600;padding:6px 3px;text-align:center;font-size:10px;line-height:1.3;}
+.stats-tbl td{border:1px solid rgba(0,0,20,0.12);padding:3px 2px;}
+.stats-tbl td input{width:100%;text-align:center;border:none;background:transparent;font-family:'Noto Sans KR',sans-serif;font-size:14px;outline:none;color:#0f1428;padding:3px 0;}
+.note-small{font-size:10px;color:rgba(40,50,90,0.6);margin-top:3px;}
+.multiselect-wrap{position:relative;user-select:none;}
+.ms-trigger{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid rgba(0,0,20,0.18);border-radius:6px;padding:9px 12px;cursor:pointer;font-size:14px;color:#0f1428;min-height:44px;}
+.ms-trigger.open{border-color:#2050c8;border-bottom-left-radius:0;border-bottom-right-radius:0;}
+.ms-display{flex:1;color:rgba(100,110,140,0.5);font-size:14px;}
+.ms-display.has-value{color:#0f1428;}
+.ms-arrow{font-size:.7rem;color:rgba(32,80,200,0.6);transition:transform .18s;margin-left:8px;}
+.ms-trigger.open .ms-arrow{transform:rotate(180deg);}
+.ms-dropdown{display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid rgba(32,80,200,0.25);border-top:none;border-radius:0 0 6px 6px;box-shadow:0 6px 20px rgba(0,0,30,0.12);z-index:50;max-height:230px;overflow-y:auto;}
+.ms-dropdown.open{display:block;}
+.ms-item{display:flex;align-items:center;gap:10px;padding:10px 13px;cursor:pointer;font-size:14px;color:#0f1428;border-bottom:1px solid rgba(0,0,20,0.05);min-height:42px;}
+.ms-item:hover{background:rgba(32,80,200,0.05);}
+.ms-item input[type=checkbox]{width:15px;height:15px;accent-color:#2050c8;cursor:pointer;flex-shrink:0;}
+.ms-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
+.ms-tag{background:#2050c8;color:#fff;border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:5px;}
+.ms-tag-x{cursor:pointer;font-size:.82rem;opacity:.75;}
+.diag-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:4px;table-layout:fixed;}
+.diag-table th,.diag-table td{width:20%;}
+.diag-table th{background:#1a3a9e;color:#fff;padding:7px 6px;text-align:center;font-weight:600;font-size:10px;border:1px solid rgba(32,80,200,0.4);}
+.diag-table td{border:1px solid rgba(32,80,200,0.15);padding:6px 7px;text-align:center;vertical-align:middle;background:#fff;}
+.diag-table tr.active-row td{background:#f0f4ff;}
+.diag-table .group-cell{background:#f7f9ff;font-weight:700;font-size:10px;color:#1a3a9e;}
+.diag-badge{display:inline-block;border-radius:20px;padding:3px 9px;font-size:10px;font-weight:700;}
+.diag-badge.green{background:#e8f5e9;color:#2e7d32;}
+.diag-badge.blue{background:#e3f0ff;color:#1565c0;}
+.diag-badge.orange{background:#fff3e0;color:#e65100;}
+.diag-name.orange{color:#e65100;}
+.diag-badge.red{background:#fdecea;color:#c00;}
+.diag-badge.purple{background:#f3e5f5;color:#6a1b9a;}
+.diag-result-card{border:1.5px solid rgba(32,80,200,0.22);border-radius:10px;overflow:hidden;background:#fff;}
+.diag-result-top{background:linear-gradient(135deg,#2a5cd8,#1a3ab0);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:11px 15px;}
+.diag-result-label{font-size:11px;font-weight:600;opacity:.85;}
+.diag-result-name{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:.06em;}
+.diag-result-body{padding:13px 15px;display:flex;flex-direction:column;gap:9px;}
+.diag-result-row{display:flex;align-items:center;gap:10px;font-size:13px;}
+.diag-result-key{min-width:68px;color:rgba(30,50,120,0.6);font-size:11px;font-weight:600;flex-shrink:0;}
+.diag-result-val{font-weight:600;color:#0f1428;}
+.diag-yeopjeop-btns{display:flex;gap:7px;flex-wrap:nowrap;flex:1;align-items:stretch;}
+.yj-btn{cursor:pointer;flex:1;position:relative;display:flex;}
+.yj-btn input[type=radio]{position:absolute;opacity:0;width:100%;height:100%;top:0;left:0;margin:0;cursor:pointer;z-index:1;}
+.yj-btn span{display:flex;align-items:center;justify-content:center;padding:8px 4px;background:#f0f2f8;border:1.5px solid rgba(0,0,20,0.12);border-radius:6px;font-size:clamp(10px,2.5vw,12px);font-weight:600;color:rgba(20,30,70,0.75);text-align:center;cursor:pointer;width:100%;word-break:keep-all;line-height:1.3;}
+.yj-btn input[type=radio]:checked+span{background:rgba(32,80,200,0.2);border-color:rgba(32,80,200,0.6);color:#0a1e6e;font-weight:800;}
+.diag-final-row{border-top:1px solid rgba(32,80,200,0.1);padding-top:9px;margin-top:1px;}
+.diag-final-val{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;padding:4px 14px;border-radius:20px;display:inline-block;}
+.diag-final-val.결신{background:#fdecea;color:#c00;}
+.diag-final-val.이미신자{background:#e8f5e9;color:#2e7d32;}
+.diag-final-val.확신{background:#e3f0ff;color:#1565c0;}
+.diag-final-val.보류거부{background:#f5f5f5;color:#666;}
+.diag-save-btn{width:100%;padding:13px;background:linear-gradient(135deg,#2a5cd8,#1a3ab0);border:none;border-radius:6px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;color:#fff;cursor:pointer;letter-spacing:1px;margin-top:9px;min-height:44px;}
+.role-badge{border-radius:20px;padding:3px 9px;font-size:11px;font-weight:700;color:#fff;display:inline-block;}
+.subbtn{width:100%;padding:15px;border:none;border-radius:8px;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;color:#fff;cursor:pointer;letter-spacing:2px;margin-top:18px;min-height:50px;}
+.subbtn.test-mode{background:linear-gradient(135deg,#1976d2,#1a3ab0);}
+.subbtn.server-mode{background:linear-gradient(135deg,#2a5cd8,#1a3ab0);}
+.subbtn:disabled{opacity:.6;}
+.draft-toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:#1a3ab0;color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;font-family:'Noto Sans KR',sans-serif;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;}
+.draft-toast.show{opacity:1;}
+#history-page{min-height:calc(100vh - 50px);}
+#history-page.test-bg{background:linear-gradient(160deg,#f0f6ff 0%,#e8effc 100%);}
+#history-page.server-bg{background:linear-gradient(160deg,#fdf9f4 0%,#f5efea 100%);}
+.history-container{max-width:720px;margin:0 auto;padding:22px 16px;}
+.history-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;}
+.history-header h2{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px;}
+.history-header h2.test{color:#1565c0;}.history-header h2.server{color:#1a3a9e;}
+.history-actions{display:flex;gap:6px;}
+.h-btn{border-radius:6px;padding:7px 13px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;border:none;min-height:34px;}
+.h-btn.primary.test{background:linear-gradient(135deg,#1976d2,#1565c0);color:#fff;}
+.h-btn.primary.server{background:linear-gradient(135deg,#2a5cd8,#1a3ab0);color:#fff;}
+.h-btn.outline.test{background:transparent;border:1.5px solid #1976d2;color:#1976d2;}
+.h-btn.outline.server{background:transparent;border:1.5px solid #2050c8;color:#2050c8;}
+.record-card{background:#fff;border:1.5px solid rgba(32,80,200,0.13);border-radius:12px;padding:14px 16px;margin-bottom:10px;box-shadow:0 2px 8px rgba(32,80,200,0.05);cursor:pointer;position:relative;overflow:hidden;}
+.record-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:#2050c8;}
+.rc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+.rc-date{font-size:10px;color:rgba(32,80,200,0.5);white-space:nowrap;font-weight:600;}
+.rc-title{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:1px;}
+.rc-title.test{color:#1565c0;}.rc-title.server{color:#1a3a9e;}
+.rc-meta{font-size:12px;color:rgba(30,40,80,0.6);margin-top:3px;line-height:1.7;}
+.rc-stats{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px;}
+.stat-chip{border-radius:20px;padding:2px 9px;font-size:11px;font-weight:600;}
+.stat-chip.neutral{background:rgba(32,80,200,0.06);color:#1a3a9e;border:1px solid rgba(32,80,200,0.12);}
+.stat-chip.blue{background:rgba(32,80,200,0.1);color:#1a3a9e;border:1px solid rgba(32,80,200,0.2);}
+.stat-chip.red{background:rgba(200,32,32,0.07);color:#c00;border:1px solid rgba(200,32,32,0.14);}
+.search-bar{display:flex;gap:6px;margin-bottom:12px;align-items:center;}
+.search-bar input{flex:1;border:1px solid rgba(32,80,200,0.2);border-radius:7px;padding:8px 12px;font-size:13px;font-family:'Noto Sans KR',sans-serif;outline:none;}
+.search-bar input:focus{border-color:#2050c8;}
+.search-bar select{border:1px solid rgba(32,80,200,0.2);border-radius:7px;padding:8px 10px;font-size:13px;font-family:'Noto Sans KR',sans-serif;outline:none;background:#fff;color:#333;cursor:pointer;}
+.search-bar select:focus{border-color:#2050c8;}
+.search-clear{background:none;border:none;color:rgba(32,80,200,0.5);font-size:16px;cursor:pointer;padding:0 4px;line-height:1;}
+.load-btn{position:absolute;right:12px;bottom:12px;color:#fff;border:none;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;opacity:0;transition:opacity .18s;}
+.load-btn.test{background:linear-gradient(135deg,#1976d2,#1565c0);}
+.load-btn.server{background:linear-gradient(135deg,#2a5cd8,#1a3ab0);}
+.record-card:hover .load-btn{opacity:1;}
+.src-badge{font-size:10px;padding:1px 6px;border-radius:3px;font-weight:700;margin-left:5px;vertical-align:middle;}
+.src-badge.test{background:#bbdefb;color:#0d47a1;}
+.src-badge.server{background:rgba(32,80,200,0.1);color:#1a3a9e;}
+.rc-seq-badge{display:inline-block;background:#1a3a9e;color:#fff;border-radius:4px;padding:1px 7px;font-size:10px;font-weight:700;margin-right:4px;letter-spacing:.5px;vertical-align:middle;}
+.empty-state{text-align:center;padding:48px 20px;color:rgba(32,80,200,0.4);}
+.empty-state .es-icon{font-size:42px;display:block;margin-bottom:10px;}
+.empty-state p{font-size:13px;line-height:1.8;color:rgba(30,40,80,0.55);}
+.status-bar{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1a1e3a;color:#fff;padding:9px 20px;border-radius:8px;font-size:13px;z-index:999;display:none;max-width:90vw;text-align:center;box-shadow:0 4px 20px rgba(0,0,30,0.25);}
+.status-bar.success{background:#1a6b3c;}.status-bar.info{background:#1565c0;}.status-bar.error{background:#c00;}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(10,15,30,0.6);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.modal-bg.open{display:flex !important;}
+.modal{background:#fff;border-radius:14px;padding:24px 22px;max-width:500px;width:100%;box-shadow:0 8px 40px rgba(0,0,30,0.2);max-height:90vh;overflow-y:auto;}
+.modal h3{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;letter-spacing:2px;color:#1a3a9e;margin-bottom:11px;}
+.modal p{font-size:12px;color:rgba(40,50,80,0.7);line-height:1.8;margin-bottom:11px;}
+.modal input[type=url]{width:100%;border:1px solid rgba(0,0,20,0.18);border-radius:6px;padding:9px 12px;font-size:14px;outline:none;font-family:'Noto Sans KR',sans-serif;margin-bottom:12px;}
+.setup-steps{background:#f7f9ff;border:1px solid rgba(32,80,200,0.15);border-radius:8px;padding:11px 13px;font-size:12px;color:rgba(30,50,120,0.75);margin-bottom:11px;line-height:1.9;}
+.setup-steps a{color:#2050c8;}
+pre.code-block{background:#1a1e3a;color:#d4d4d4;padding:11px;border-radius:6px;font-size:10px;overflow:auto;max-height:170px;line-height:1.5;white-space:pre-wrap;margin-top:7px;}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end;}
+.modal-btns button{border-radius:6px;padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;border:none;min-height:38px;}
+.btn-cancel{background:#f0f2f8;color:rgba(30,40,80,0.7);}
+.btn-save{background:linear-gradient(135deg,#2a5cd8,#1a3ab0);color:#fff;}
+#preview-page{padding:16px 14px 50px;background:linear-gradient(160deg,#f0f4ff 0%,#e8effc 100%);min-height:calc(100vh - 50px);}
+.preview-wrap{max-width:760px;margin:0 auto;}
+.preview-notice{background:#fffbe6;border:1px solid rgba(200,160,20,0.3);border-radius:6px;padding:7px 12px;font-size:11px;color:#7a6020;margin-bottom:12px;}
+.doc-paper{background:#fff;box-shadow:0 4px 28px rgba(32,80,200,0.1);padding:36px 44px 44px;font-family:'Noto Sans KR',sans-serif;font-size:13px;color:#111;line-height:1.8;border-radius:4px;}
+.doc-header-row{display:flex;justify-content:flex-end;margin-bottom:12px;}
+.doc-title-block{display:flex;align-items:center;gap:8px;}
+.doc-globe{font-size:22px;}
+.doc-title-block h1{font-family:'Bebas Neue',sans-serif;font-size:1.85rem;letter-spacing:4px;color:#1a1e3a;}
+.doc-date-row{text-align:right;font-size:13px;margin-bottom:18px;}
+.dblank{display:inline-block;border-bottom:1px solid #333;min-width:60px;padding:0 4px;text-align:center;font-size:13px;vertical-align:baseline;}
+.dblank.xs{min-width:32px;}.dblank.sm{min-width:50px;}.dblank.md{min-width:90px;}.dblank.lg{min-width:130px;}
+.dbold{font-weight:700;}
+.doc-item{margin-bottom:9px;}
+.doc-item-line{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 4px;line-height:2.1;}
+.doc-num{font-weight:700;margin-right:3px;}
+.doc-table{width:100%;border-collapse:collapse;margin:5px 0 3px;font-size:11px;}
+.doc-table th{background:#1a3a9e;color:#fff;padding:5px 3px;text-align:center;font-weight:500;border:1px solid #1a3a9e;line-height:1.3;font-size:10px;}
+.doc-table td{border:1px solid rgba(32,80,200,0.2);padding:5px 4px;text-align:center;}
+.doc-note-small{font-size:10px;color:rgba(32,80,200,0.5);margin-top:3px;}
+.doc-notebox{border:1px solid rgba(32,80,200,0.15);padding:7px 11px;margin:7px 0;font-size:11px;color:rgba(30,50,120,0.6);background:rgba(32,80,200,0.03);line-height:1.7;border-radius:4px;}
+.doc-line{border-bottom:1px solid rgba(32,80,200,0.15);min-height:20px;margin-bottom:6px;padding:2px 4px;font-size:13px;white-space:pre-wrap;}
+.doc-line.tall{min-height:38px;}
+.doc-footer-text{text-align:center;font-size:12px;font-weight:600;margin-top:22px;color:rgba(32,80,200,0.5);letter-spacing:2px;}
+@media print{.topbar,.preview-notice,#form-page,#history-page,.status-bar{display:none!important;}body{background:white!important;}#preview-page{display:block!important;padding:0!important;background:white!important;}.preview-wrap{max-width:100%;margin:0;}.doc-paper{box-shadow:none!important;padding:15mm 17mm!important;border-radius:0;}@page{size:A4;margin:0;}}
+@media(max-width:580px){.topbar{padding:0 8px;}.doc-paper{padding:18px 12px 26px;}.g3{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="mode-toggle">
+      <button class="mode-btn" id="btn-test" onclick="setMode('test')">🧪 테스트</button>
+      <button class="mode-btn" id="btn-server" onclick="setMode('server')">☁️ 서버</button>
+    </div>
+  </div>
+  <div class="tab-btns">
+    <button class="tab-btn active" onclick="switchTab('form')">✏️ 작성</button>
+    <button class="tab-btn" onclick="switchTab('preview')">👁 미리보기</button>
+    <button class="tab-btn" onclick="switchTab('history')">📋 기록</button>
+  </div>
+  <div class="topbar-right">
+    <button class="icon-btn" onclick="handleSheetBtn()">⚙️</button>
+    <button class="icon-btn primary" onclick="printDoc()">🖨</button>
+  </div>
+</div>
+
+<!-- FORM PAGE -->
+<div id="form-page" class="page active">
+<div class="hd" style="position:relative;">
+  <div class="draft-toast" id="draft-toast">📝 임시저장 완료</div>
+<div class="server-connected-badge" id="server-connected-badge">
+    <span class="scb-label">연결됨</span>
+    <span class="scb-dot"></span>
+    <span class="scb-lock">🔒</span>
+  </div>
+  <div class="hd-eyebrow">EVANGELISM FIELD REPORT</div>
+  <div class="hd-title">공개 <span>보고서</span></div>
+  <div class="hd-sub">현장전도 보고서</div>
+  <div class="hd-badge">날짜: <input type="date" id="report-date" oninput="syncPreview()" style="background:transparent;border:none;font-family:'Noto Sans KR',sans-serif;font-size:12px;color:rgba(20,50,160,1);outline:none;width:auto;padding:0;"></div>
+</div>
+<div class="con">
+  <div class="sec">
+    <div class="sec-lbl">1. 조 선택 &amp; 팀 구성원
+      <button type="button" onclick="openJoModal()" style="margin-left:auto;background:rgba(32,80,200,0.08);border:1px solid rgba(32,80,200,0.25);color:#2050c8;border-radius:5px;padding:3px 10px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">⚙️ 조 편집</button>
+    </div>
+    <!-- 주차 선택 -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <label style="font-size:12px;font-weight:700;color:rgba(30,40,80,0.7);white-space:nowrap;">주차</label>
+      <select id="report-week" onchange="syncPreview()" style="width:100px;background:#fff;border:1px solid rgba(0,0,20,0.18);border-radius:6px;padding:8px 10px;font-family:'Noto Sans KR',sans-serif;font-size:14px;color:#0f1428;outline:none;font-weight:700;">
+        <option value="">선택</option>
+        <option value="1">1주차</option>
+        <option value="2">2주차</option>
+        <option value="3">3주차</option>
+        <option value="4">4주차</option>
+        <option value="5">5주차</option>
+        <option value="6">6주차</option>
+        <option value="7">7주차</option>
+        <option value="8">8주차</option>
+        <option value="9">9주차</option>
+        <option value="10">10주차</option>
+        <option value="11">11주차</option>
+        <option value="12">12주차</option>
+        <option value="13">13주차</option>
+      </select>
+    </div>
+    <!-- 조 선택 드롭다운 -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+      <select id="q1_jo" onchange="onJoSelect()" style="flex:1;max-width:160px;background:#fff;border:1px solid rgba(0,0,20,0.18);border-radius:6px;padding:9px 10px;font-family:'Noto Sans KR',sans-serif;font-size:15px;color:#0f1428;outline:none;font-weight:700;">
+        <option value="">조 선택</option>
+      </select>
+      <span style="font-size:13px;color:rgba(30,40,80,0.7);white-space:nowrap;">현장전도 보고 드리겠습니다.</span>
+    </div>
+    <!-- 3명 이름 동일선상 -->
+    <div style="display:flex;gap:8px;align-items:flex-end;">
+      <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+        <span style="font-size:11px;"><span class="role-badge" style="background:#1a3a9e;">훈련자(조장)</span></span>
+        <input type="text" id="q2_leader" placeholder="이름" oninput="syncPreview()" style="width:100%;">
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+        <span style="font-size:11px;"><span class="role-badge" style="background:#2050c8;">훈련자</span></span>
+        <input type="text" id="q2_trainer" placeholder="이름" oninput="syncPreview()" style="width:100%;">
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
+        <span style="font-size:11px;"><span class="role-badge" style="background:#5c7cbb;">훈련생</span></span>
+        <input type="text" id="q2_trainee1" placeholder="이름" oninput="syncPreview()" style="width:100%;">
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="sec">
+    <div class="sec-lbl" style="margin-top:14px;">문서 정보</div>
+    <div class="g2" style="margin-bottom:10px;">
+      <div class="fld"><div class="lbl">문서번호</div><input type="text" id="doc_number" placeholder="예: 2025-001" oninput="syncPreview()" style="font-weight:700;letter-spacing:1px;"></div>
+      <div class="fld"><div class="lbl">복음제시 &amp; 횟수</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <select id="evang_type" onchange="syncPreview()" style="flex:1;background:#fff;border:1px solid rgba(0,0,20,0.18);border-radius:6px;padding:9px 10px;font-family:'Noto Sans KR',sans-serif;font-size:14px;color:#0f1428;outline:none;">
+            <option value="">구분 선택</option>
+            <option value="관계(팀)">관계(팀)</option>
+            <option value="질문지(팀)">질문지(팀)</option>
+            <option value="7일후(팀)">7일후(팀)</option>
+            <option value="개인">개인</option>
+            <option value="관계">관계</option>
+            <option value="QQ">QQ</option>
+          </select>
+          <input type="number" min="0" id="evang_count" placeholder="횟수" oninput="syncPreview()" style="width:72px;text-align:center;">
+        </div>
+      </div>
+    </div>
+    <div class="sec-lbl" style="margin-top:14px;">통계</div>
+    <div style="overflow-x:auto;">
+      <table class="stats-tbl">
+        <thead><tr><th>접촉횟수</th><th>복음제시</th><th>전도대상</th><th>결신</th><th>보류/거절</th><th>확신복음</th><th>이미신자</th></tr></thead>
+        <tbody><tr>
+          <td><input type="number" min="0" id="t_contact" placeholder="0" oninput="syncPreview()"></td>
+          <td><input type="number" min="0" id="t_gospel" placeholder="0" oninput="syncPreview()"></td>
+          <td><input type="number" min="0" id="t_target" placeholder="0" oninput="syncPreview()"></td>
+          <td><input type="number" min="0" id="t_decision" placeholder="0" oninput="syncPreview()"></td>
+          <td><input type="number" min="0" id="t_reject" placeholder="0" oninput="syncPreview()"></td>
+          <td><input type="number" min="0" id="t_confirm" placeholder="0" oninput="syncPreview()"></td>
+          <td><input type="number" min="0" id="t_believer" placeholder="0" oninput="syncPreview()"></td>
+        </tr></tbody>
+      </table>
+    </div>
+    <p class="note-small">* 접촉횟수는 현장전도시 모든 만남을 포함합니다.</p>
+  </div>
+  <div class="divider"></div>
+  <div class="sec"><div class="sec-lbl">3. 만난 분의 인적 정보</div>
+    <div class="fld" style="margin-bottom:10px;"><div class="lbl">대상자 구분</div>
+      <select id="q3_target_type" onchange="syncPreview()" style="background:#fff;border:1px solid rgba(0,0,20,0.18);border-radius:6px;padding:9px 10px;font-family:'Noto Sans KR',sans-serif;font-size:15px;color:#0f1428;outline:none;width:100%;">
+        <option value="">선택</option>
+        <option value="지인/지인가족">지인/지인가족</option>
+        <option value="가족">가족</option>
+        <option value="지구촌교인">지구촌교인</option>
+        <option value="질문지">질문지</option>
+        <option value="7일후">7일후</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:10px;align-items:flex-end;">
+      <div class="fld" style="flex:1;margin-bottom:0;"><div class="lbl">거주 지역 <span style="font-weight:400;font-size:10px;color:rgba(0,0,0,0.4);">(예: 상현동, 신봉동 등)</span></div><input type="text" id="q3_location" placeholder="지역 입력" oninput="syncPreview()" style="width:100%;box-sizing:border-box;"></div>
+      <div class="fld" style="flex:1;margin-bottom:0;"><div class="lbl">성씨 <span style="font-weight:400;font-size:10px;color:rgba(0,0,0,0.4);">(예: 전씨, 김씨)</span></div><input type="text" id="q3_name" placeholder="성씨" oninput="syncPreview()" style="width:100%;box-sizing:border-box;"></div>
+      <div class="fld" style="flex:1;margin-bottom:0;"><div class="lbl">나이 <span style="font-weight:400;font-size:10px;color:rgba(0,0,0,0.4);">(예: 35세, 30대)</span></div><input type="text" id="q3_age" placeholder="나이" oninput="syncPreview()" style="width:100%;box-sizing:border-box;"></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:8px;align-items:flex-start;">
+      <div class="fld" style="flex:1;margin-bottom:0;"><div class="lbl">결혼 여부</div>
+        <div class="rg" style="margin-top:6px;">
+          <div class="rb"><input type="radio" name="marriage" value="미혼" id="m1" onchange="syncPreview()"><label for="m1">미혼</label></div>
+          <div class="rb"><input type="radio" name="marriage" value="기혼" id="m2" onchange="syncPreview()"><label for="m2">기혼</label></div>
+        </div>
+      </div>
+      <div class="fld" style="flex:1;margin-bottom:0;"><div class="lbl">성별</div>
+        <div class="rg" style="margin-top:6px;">
+          <div class="rb"><input type="radio" name="gender" value="남자" id="g1" onchange="syncPreview()"><label for="g1">남자</label></div>
+          <div class="rb"><input type="radio" name="gender" value="여자" id="g2" onchange="syncPreview()"><label for="g2">여자</label></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="sec"><div class="sec-lbl">4. 종교배경 및 직업</div>
+    <div class="g2">
+      <div class="fld"><div class="lbl">종교배경</div>
+        <select id="q4_religion_sel" onchange="onReligionSelect()" style="background:#fff;border:1px solid rgba(0,0,20,0.18);border-radius:6px;padding:9px 10px;font-family:'Noto Sans KR',sans-serif;font-size:15px;color:#0f1428;outline:none;width:100%;">
+          <option value="">선택</option>
+          <option value="기독교">기독교</option>
+          <option value="천주교">천주교</option>
+          <option value="불교">불교</option>
+          <option value="무교">무교</option>
+          <option value="__direct__">직접입력</option>
+        </select>
+        <input type="text" id="q4_religion" placeholder="직접 입력 후 등록" oninput="syncPreview()" style="display:none;margin-top:6px;">
+        <button type="button" id="religion-reg-btn" onclick="registerReligion()" style="display:none;margin-top:5px;width:100%;background:rgba(32,80,200,0.08);border:1px solid rgba(32,80,200,0.3);color:#2050c8;border-radius:5px;padding:6px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">+ 목록에 등록</button>
+      </div>
+      <div class="fld"><div class="lbl">직업</div><input type="text" id="q4_job" placeholder="직업" oninput="syncPreview()"></div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="sec"><div class="sec-lbl no-after" style="display:flex;align-items:center;">5. 확신 및 이유 질문<button type="button" onclick="resetQ5()" style="margin-left:auto;background:rgba(180,40,40,0.07);border:1px solid rgba(180,40,40,0.2);color:rgba(180,40,40,0.7);border-radius:5px;padding:2px 9px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;letter-spacing:0;text-transform:none;">↺ 초기화</button></div>
+    <div class="fld" style="margin-bottom:12px;"><div class="lbl">5-1 &nbsp;천국에 들어갈 확신</div>
+      <div class="rg" style="margin-top:7px;">
+        <div class="rb"><input type="radio" name="heaven" value="있었고" id="h2" onchange="onQ5Change()"><label for="h2">있었고</label></div>
+        <div class="rb"><input type="radio" name="heaven" value="없었고" id="h1" onchange="onQ5Change()"><label for="h1">없었고</label></div>
+      </div>
+    </div>
+    <div class="fld" style="margin-bottom:14px;"><div class="lbl">5-2 &nbsp;하나님의 '이유'에 대한 대답</div>
+      <div class="rg" style="margin-top:7px;">
+        <div class="rb"><input type="radio" name="reason" value="믿음" id="r1" onchange="onQ5Change()"><label for="r1">믿음(예수님)</label></div>
+        <div class="rb"><input type="radio" name="reason" value="행위" id="r2" onchange="onQ5Change()"><label for="r2">행위</label></div>
+        <div class="rb"><input type="radio" name="reason" value="불확실" id="r3" onchange="onQ5Change()"><label for="r3">불확실</label></div>
+        <div class="rb"><input type="radio" name="reason" value="대답안함" id="r4" onchange="onQ5Change()"><label for="r4">대답안함</label></div>
+      </div>
+    </div>
+    <div style="margin-bottom:13px;">
+      <div class="lbl" style="margin-bottom:7px;color:rgba(32,80,200,0.55);font-size:10px;letter-spacing:2px;text-transform:uppercase;">📋 진단 기준표</div>
+      <div style="overflow-x:auto;">
+        <table class="diag-table" id="diag-ref-table">
+          <thead><tr><th>확신</th><th>이유 대답</th><th>진단</th><th>영접</th><th>결과</th></tr></thead>
+          <tbody>
+            <tr data-hv="있었고" data-rs="믿음"><td class="group-cell" rowspan="4">있다</td><td class="group-cell" rowspan="2" style="font-size:10px;text-align:left;line-height:1.7;">▷믿음(예수님)</td><td>머리신자</td><td style="color:#2e7d32;font-weight:600;">영접</td><td style="color:#c00;font-weight:700;">결신</td></tr>
+            <tr data-hv="있었고" data-rs="믿음"><td>이미신자</td><td style="color:#888;">불필요</td><td style="color:#2e7d32;font-weight:700;">이미신자</td></tr>
+            <tr data-hv="있었고" data-rs="etc"><td class="group-cell" rowspan="2" style="font-size:10px;text-align:left;line-height:1.7;">▷행위<br>▷불확실<br>▷대답안함</td><td rowspan="2"><span class="diag-badge red">착각비신자</span></td><td style="color:#2e7d32;font-weight:600;">영접</td><td style="color:#c00;font-weight:700;">결신</td></tr>
+            <tr data-hv="있었고" data-rs="etc"><td style="color:#bbb;font-weight:700;">X</td><td style="color:#666;">보류/거부</td></tr>
+            <tr data-hv="없었고" data-rs="믿음"><td class="group-cell" rowspan="4">없다</td><td class="group-cell" rowspan="2" style="font-size:10px;text-align:left;line-height:1.7;">▷믿음(예수님)</td><td><span class="diag-badge blue">확신 부족</span></td><td style="color:#2e7d32;font-weight:600;">영접</td><td style="color:#1565c0;font-weight:700;">확신</td></tr>
+            <tr data-hv="없었고" data-rs="믿음"><td><span class="diag-badge purple">비신자</span></td><td style="color:#bbb;font-weight:700;">X</td><td style="color:#666;">보류/거부</td></tr>
+            <tr data-hv="없었고" data-rs="etc"><td class="group-cell" rowspan="2" style="font-size:10px;text-align:left;line-height:1.7;">▷행위<br>▷불확실<br>▷대답안함</td><td rowspan="2"><span class="diag-badge purple">비신자</span></td><td style="color:#2e7d32;font-weight:600;">영접</td><td style="color:#c00;font-weight:700;">결신</td></tr>
+            <tr data-hv="없었고" data-rs="etc"><td style="color:#bbb;font-weight:700;">X</td><td style="color:#666;">보류/거부</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div id="cond6-section" style="display:none;margin-bottom:14px;"><div class="sec-lbl">6. 개인간증을 들었을 때 <span style="font-weight:400;color:rgba(32,80,200,0.4);text-transform:none;letter-spacing:0;">(확신 있음 + 믿음)</span></div>
+      <div class="rg">
+        <div class="rb"><input type="radio" name="testimony6" value="이미신자" id="t61" onchange="onTestimony6Change();syncPreview()"><label for="t61">이미신자</label></div>
+        <div class="rb"><input type="radio" name="testimony6" value="머리신자" id="t62" onchange="onTestimony6Change();syncPreview()"><label for="t62">머리신자</label></div>
+      </div>
+    </div>
+    <div id="cond7-section" style="display:none;margin-bottom:14px;"><div class="sec-lbl">7. 개인간증을 들었을 때 <span style="font-weight:400;color:rgba(32,80,200,0.4);text-transform:none;letter-spacing:0;">(확신 없음 + 믿음)</span></div>
+      <div class="rg">
+        <div class="rb"><input type="radio" name="testimony7" value="확신부족신자" id="t71" onchange="updateDiagFromSubResult();syncPreview()"><label for="t71">확신부족신자</label></div>
+        <div class="rb"><input type="radio" name="testimony7" value="비신자" id="t72b" onchange="updateDiagFromSubResult();syncPreview()"><label for="t72b">비신자</label></div>
+      </div>
+    </div>
+    <div id="diag-card" style="display:none;">
+      <div class="diag-result-card">
+        <div class="diag-result-top"><span class="diag-result-label">🎯 진단 결과</span><span class="diag-result-name" id="diag-name"></span></div>
+        <div class="diag-result-body">
+          <div class="diag-result-row"><span class="diag-result-key">5-1 확신</span><span class="diag-result-val" id="diag-hv"></span></div>
+          <div class="diag-result-row"><span class="diag-result-key">5-2 이유</span><span class="diag-result-val" id="diag-rs"></span></div>
+          <div class="diag-result-row"><span class="diag-result-key">진단</span><span id="diag-badge-wrap"></span></div>
+          <div class="diag-result-row"><span class="diag-result-key">영접 여부</span>
+            <div class="diag-yeopjeop-btns">
+              <div class="yj-btn"><input type="radio" name="yeopjeop" value="영접" id="yj1" onchange="onYeopjeopChange()"><span>✅ 영접</span></div>
+              <div class="yj-btn"><input type="radio" name="yeopjeop" value="X" id="yj2" onchange="onYeopjeopChange()"><span>❌ 거부/보류</span></div>
+              <div class="yj-btn"><input type="radio" name="yeopjeop" value="불필요" id="yj3" onchange="onYeopjeopChange()"><span>— 불필요</span></div>
+            </div>
+          </div>
+          <div class="diag-result-row diag-final-row" id="diag-final-row" style="display:none;">
+            <span class="diag-result-key">최종 결과</span><span class="diag-final-val" id="diag-final-val"></span>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="diag-save-btn" onclick="saveDiagResult()">진단결과 저장 →</button>
+    </div>
+    <input type="hidden" id="diag-saved-result">
+    <div id="cond8-section" style="display:none;margin-top:14px;margin-bottom:14px;"><div class="sec-lbl">8. 역할 배분 <span style="font-weight:400;color:rgba(32,80,200,0.4);text-transform:none;letter-spacing:0;">(그 외 대답)</span></div>
+      <div id="role-leader" style="margin-bottom:14px;"></div>
+      <div id="role-trainer" style="margin-bottom:14px;"></div>
+      <div id="role-trainee" style="margin-bottom:14px;"></div>
+      <div class="fld"><div class="lbl">결과</div><input type="text" id="q8_result" placeholder="결과 입력" oninput="updateDiagFromSubResult();syncPreview()"></div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="sec"><div class="sec-lbl">9. 즉석양육 및 후속양육</div>
+    <div class="fld" style="margin-bottom:12px;"><div class="lbl">즉석양육</div>
+      <div class="rg" style="margin-top:7px;">
+        <div class="rb"><input type="radio" name="immed_nurture" value="했고" id="in1" onchange="syncPreview()"><label for="in1">했고</label></div>
+        <div class="rb"><input type="radio" name="immed_nurture" value="안했고" id="in2" onchange="syncPreview()"><label for="in2">안했고</label></div>
+      </div>
+    </div>
+    <div class="fld"><div class="lbl">후속양육 방법</div>
+      <div class="multiselect-wrap" id="followup-ms-wrap" style="margin-top:7px;">
+        <div class="ms-trigger" onclick="toggleDropdown('followup',event)"><span class="ms-display" id="followup-ms-display">선택하세요</span><span class="ms-arrow">▾</span></div>
+        <div class="ms-dropdown" id="followup-ms-dropdown">
+          <label class="ms-item"><input type="radio" name="followup" value="하지 못" onchange="updateFollowup();syncPreview()"> 하지 못</label>
+          <label class="ms-item"><input type="radio" name="followup" value="24시간 이내 전화" onchange="updateFollowup();syncPreview()"> 24시간 이내 전화</label>
+          <label class="ms-item"><input type="radio" name="followup" value="토요심방" onchange="updateFollowup();syncPreview()"> 토요심방</label>
+          <label class="ms-item"><input type="radio" name="followup" value="예배 참석 약속" onchange="updateFollowup();syncPreview()"> 예배 참석 약속</label>
+          <label class="ms-item"><input type="radio" name="followup" value="7일 후 재 방문 약속" onchange="updateFollowup();syncPreview()"> 7일 후 재 방문 약속</label>
+          <label class="ms-item"><input type="radio" name="followup" value="새가족반 연결" onchange="updateFollowup();syncPreview()"> 새가족반 연결</label>
+        </div>
+      </div>
+      <div class="ms-tags" id="followup-ms-tags"></div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="sec"><div class="sec-lbl">10. 성령께서 인도하신 특별한 경험(교훈)</div><textarea id="q10" rows="6" placeholder="내용을 입력하세요..." oninput="syncPreview()"></textarea></div>
+  <div class="sec"><div class="sec-lbl">11. 현장전도에서 문제점</div><textarea id="q11" rows="2" placeholder="문제점을 입력하세요..." oninput="syncPreview()"></textarea></div>
+  <div class="sec"><div class="sec-lbl">12. 요청받은 기도제목</div><textarea id="q12" rows="2" placeholder="기도제목을 입력하세요..." oninput="syncPreview()"></textarea></div>
+  <div class="sec"><div class="sec-lbl">13. 기타</div><textarea id="q13" rows="2" placeholder="기타 사항을 입력하세요..." oninput="syncPreview()"></textarea></div>
+  <div style="text-align:center;font-size:11px;color:rgba(32,80,200,0.4);letter-spacing:2px;margin-bottom:14px;">모든 영광을 하나님께 올려드립니다!</div>
+  <button type="button" id="draft-btn" onclick="saveDraft()" style="width:100%;padding:10px;border:1px dashed rgba(32,80,200,0.35);border-radius:8px;background:rgba(32,80,200,0.04);font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:600;color:rgba(32,80,200,0.7);cursor:pointer;letter-spacing:1px;margin-bottom:8px;">📝 임시저장</button>
+  <button type="button" class="subbtn test-mode" id="submit-btn" onclick="handleSubmit()">💾 테스트 저장</button>
+</div>
+</div>
+
+<!-- HISTORY PAGE -->
+<div id="history-page" class="page test-bg">
+<div class="history-container">
+  <div class="history-header">
+    <h2 class="test" id="history-title">TEST RECORDS</h2>
+    <div class="history-actions">
+      <button type="button" class="h-btn outline test" id="refresh-btn" onclick="loadHistory()">🔄 새로고침</button>
+      <button type="button" class="h-btn outline test" id="search-btn" onclick="toggleSearch()">🔍 검색</button>
+      <button type="button" class="h-btn primary test" id="new-btn" onclick="switchTab('form')">+ 새 보고서</button>
+    </div>
+  </div>
+  <div class="search-bar" id="search-bar" style="display:none;">
+    <select id="search-type" onchange="filterHistory()">
+      <option value="doc_number">문서번호</option>
+      <option value="jo">조</option>
+    </select>
+    <input type="text" id="search-input" placeholder="검색어 입력..." oninput="filterHistory()">
+    <button class="search-clear" onclick="clearSearch()" title="초기화">✕</button>
+  </div>
+  <div id="history-list"><div class="empty-state"><span class="es-icon">📄</span><p>아직 제출된 보고서가 없습니다.</p></div></div>
+</div>
+</div>
+
+<!-- PREVIEW PAGE -->
+<div id="preview-page" class="page">
+<div class="preview-wrap">
+  <div class="preview-notice">📄 원본 양식 출력 미리보기 · 🖨 인쇄 버튼으로 출력</div>
+  <div class="doc-paper">
+    <div class="doc-header-row"><div class="doc-title-block"><span class="doc-globe">🌐</span><h1>공개보고서</h1></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:12px;margin-bottom:4px;">
+      <div>문서번호 : <span style="font-weight:700;letter-spacing:1px;border-bottom:1px solid #333;min-width:90px;display:inline-block;padding:0 6px;text-align:center;" id="p_doc_number">&nbsp;</span></div>
+      <div>복음제시 : <span style="font-weight:700;border-bottom:1px solid #333;min-width:80px;display:inline-block;padding:0 6px;text-align:center;" id="p_evang_type">&nbsp;</span> &nbsp; <span id="p_evang_count_wrap" style="display:none;">(<span id="p_evang_count"></span>회)</span></div>
+    </div>
+    <div class="doc-date-row">20<span class="dblank xs" id="p_year">&nbsp;</span> 년 &nbsp;<span class="dblank xs" id="p_month">&nbsp;</span> 월 &nbsp;<span class="dblank xs" id="p_day">&nbsp;</span> 일</div>
+    <div class="doc-item"><div class="doc-item-line"><span class="doc-num">1.</span> <span class="dblank sm" id="p_jo">&nbsp;</span> 현장전도 보고 드리겠습니다.</div></div>
+    <div class="doc-item">
+      <div class="doc-item-line"><span class="doc-num">2.</span> 저희 팀 훈련자(조장)은 <span class="dblank md" id="p_leader">&nbsp;</span>, 훈련자는 <span class="dblank md" id="p_trainer">&nbsp;</span>, 훈련생은 <span class="dblank md" id="p_trainee1">&nbsp;</span> 입니다.</div>
+      <table class="doc-table" style="margin-top:5px;"><thead><tr><th>접촉횟수</th><th>복음제시</th><th>전도대상자</th><th>결신</th><th>보류/거절</th><th>확신복음제시</th><th>이미신자</th></tr></thead>
+      <tbody><tr><td id="p_contact">&nbsp;</td><td id="p_gospel">&nbsp;</td><td id="p_target">&nbsp;</td><td id="p_decision">&nbsp;</td><td id="p_reject">&nbsp;</td><td id="p_confirm">&nbsp;</td><td id="p_believer">&nbsp;</td></tr></tbody></table>
+      <p class="doc-note-small">(* 접촉횟수는 현장전도시 모든 만남을 포함합니다.)</p>
+    </div>
+    <div class="doc-item"><div class="doc-item-line"><span class="doc-num">3.</span> 대상 구분 : ( <span class="dbold" id="p_target_type">—</span> ) &nbsp;·&nbsp; 저희들은 <span class="dblank lg" id="p_location">&nbsp;</span> 에 사시는 <span class="dblank sm" id="p_name">&nbsp;</span> 씨 성을 가진 <span class="dblank xs" id="p_age">&nbsp;</span> 세 되신 ( <span class="dbold" id="p_marriage_bold">미혼 / 기혼</span> )의 ( <span class="dbold" id="p_gender_bold">남자 / 여자</span> ) 분을 만났습니다.</div></div>
+    <div class="doc-item"><div class="doc-item-line"><span class="doc-num">4.</span> 그 분의 종교배경은 <span class="dblank lg" id="p_religion">&nbsp;</span> 이었고, 직업은 <span class="dblank lg" id="p_job">&nbsp;</span> 이었습니다.</div></div>
+    <div class="doc-item"><div class="doc-item-line"><span class="doc-num">5.</span> 천국에 들어갈 확신은 ( <span class="dbold" id="p_heaven_bold">없었고 / 있었고</span> ), 하나님의 '이유'에 대한 대답은 ( <span class="dbold" id="p_reason_bold">믿음 / 행위 / 불확실 / 대답안함</span> ) 이었습니다.</div></div>
+    <div class="doc-notebox">※ 확신이 <strong>있고</strong> + <strong>믿음</strong> → 6번 &nbsp;|&nbsp; 확신이 <strong>없고</strong> + <strong>믿음</strong> → 7번 &nbsp;|&nbsp; 그 외 → 8번</div>
+    <div id="p_diag_result_row" style="display:none;" class="doc-item"><div class="doc-item-line" style="gap:6px;"><span style="font-size:12px;color:rgba(32,80,200,0.5);">　진단결과 :</span><span style="font-weight:700;color:#1a3a9e;" id="p_diag_name"></span><span style="font-size:12px;color:#aaa;">│ 영접:</span><span style="font-weight:600;" id="p_diag_yj"></span><span style="font-size:12px;color:#aaa;">│ 결과:</span><span style="font-weight:700;" id="p_diag_final"></span></div></div>
+    <div id="p_section6" style="display:none;" class="doc-item"><div class="doc-item-line"><span class="doc-num">6.</span> 개인간증을 들었을 때 ( <span class="dbold" id="p_testimony6_bold">이미신자 / 머리신자</span> ) 이었습니다.</div></div>
+    <div id="p_section7" style="display:none;" class="doc-item"><div class="doc-item-line"><span class="doc-num">7.</span> 개인간증을 들었을 때 ( <span class="dbold" id="p_testimony7_bold">확신부족신자 / 비신자</span> ) 이었습니다.</div></div>
+    <div id="p_section8" style="display:none;" class="doc-item"><div class="doc-item-line"><span class="doc-num">8.</span> 훈련자(조장)은 <span class="dblank md" id="p_leader_part">&nbsp;</span> ( <span class="dbold" id="p_leader_action_bold">하였고 / 참관하였고 / 불참하였고</span> ), 훈련자는 <span class="dblank md" id="p_trainer_part">&nbsp;</span> ( <span class="dbold" id="p_trainer_action_bold">하였고 / 참관하였고 / 불참하였고</span> ), 훈련생은 <span class="dblank md" id="p_trainee_part">&nbsp;</span> ( <span class="dbold" id="p_trainee_action_bold">하였고 / 참관하였고 / 불참하였고</span> ), 결과는 <span class="dblank md" id="p_result">&nbsp;</span> 했습니다.</div></div>
+    <div class="doc-item"><div class="doc-item-line"><span class="doc-num">9.</span> 즉석양육을 ( <span class="dbold" id="p_immed_bold">했고 / 안했고</span> ), 후속양육으로는 ( <span class="dbold" id="p_followup_bold">—</span> ) 했습니다.</div></div>
+    <div class="doc-item"><div class="doc-item-line"><span class="doc-num">10.</span> 성령께서 인도하신 특별한 경험(교훈) :</div><div><div class="doc-line tall" id="p_q10"></div></div></div>
+    <div class="doc-item"><div class="doc-item-line"><span class="doc-num">11.</span> 현장전도에서 문제점 :</div><div><div class="doc-line tall" id="p_q11"></div></div></div>
+    <div class="doc-item"><div class="doc-item-line"><span class="doc-num">12.</span> 요청받은 기도제목 :</div><div><div class="doc-line tall" id="p_q12"></div></div></div>
+    <div class="doc-item"><div class="doc-item-line"><span class="doc-num">13.</span> 기타 :</div><div><div class="doc-line" id="p_q13"></div></div></div>
+    <div class="doc-footer-text">모든 영광을 하나님께 올려드립니다!</div>
+  </div>
+</div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <h3>GOOGLE SHEETS</h3>
+    <p>Apps Script 웹앱 URL을 입력하면 구글 시트에 데이터가 저장됩니다.</p>
+    <div class="setup-steps"><strong>설정 방법 (최초 1회)</strong><br>1. <a href="https://docs.google.com/spreadsheets/d/12NjaG5IeroCfZJ_2Ur_eqixLPDGGMsJHKUmd9D2JMPs/edit" target="_blank">📊 공개보고서 구글 시트 열기</a><br>2. 확장 프로그램 → Apps Script<br>3. 아래 코드 복사 → 저장 → 배포 → 새 배포<br>4. 웹앱 · 모든 사용자 → 배포 → URL 입력</div>
+    <details><summary style="cursor:pointer;font-size:11px;color:#2050c8;font-weight:600;margin-bottom:6px;">📋 Apps Script 코드 보기</summary>
+      <pre class="code-block" id="apps-script-code">const SHEET_ID='12NjaG5IeroCfZJ_2Ur_eqixLPDGGMsJHKUmd9D2JMPs';
+const SHEET_NAME='시트1';
+function doPost(e){try{const d=JSON.parse(e.postData.contents);const s=SpreadsheetApp.openById(SHEET_ID).getSheetByName(SHEET_NAME);s.appendRow([new Date().toLocaleString('ko-KR'),d.jo,d.leader,d.trainer,d.trainee1,d.contact,d.gospel,d.target,d.decision,d.reject,d.confirm,d.believer,d.location,d.name,d.age,d.marriage,d.gender,d.religion,d.job,d.heaven,d.reason,d.yeopjeop,d.diag_result,d.testimony6,d.testimony7,d.leader_part,d.leader_action,d.trainer_part,d.trainer_action,d.trainee_part,d.trainee_action,d.result,d.immed_nurture,d.followup,d.q10,d.q11,d.q12,d.q13,d.week,d.date]);return ContentService.createTextOutput(JSON.stringify({status:'ok'})).setMimeType(ContentService.MimeType.JSON);}catch(e){return ContentService.createTextOutput(JSON.stringify({status:'error',message:e.toString()})).setMimeType(ContentService.MimeType.JSON);}}
+function doGet(e){try{const s=SpreadsheetApp.openById(SHEET_ID).getSheetByName(SHEET_NAME);const rows=s.getDataRange().getValues();const h=rows[0];const rec=rows.slice(1).map((r,i)=>{const o={rowIndex:i+2};h.forEach((k,j)=>o[k]=r[j]);return o;}).reverse();return ContentService.createTextOutput(JSON.stringify({status:'ok',records:rec})).setMimeType(ContentService.MimeType.JSON);}catch(e){return ContentService.createTextOutput(JSON.stringify({status:'error',message:e.toString()})).setMimeType(ContentService.MimeType.JSON);}}</pre>
+      <button type="button" onclick="copyCode()" style="margin-top:6px;background:#2050c8;color:#fff;border:none;border-radius:4px;padding:4px 12px;font-size:11px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">📋 코드 복사</button>
+    </details>
+    <input type="url" id="script-url-input" placeholder="https://script.google.com/macros/s/AKfycbypxiCgaEIyej8F0UTnBf9AWS2_vcWv-GudBkljTSDHNB1w2bX6iUMCTqZcf_QSHI5N/exec">
+    <div class="modal-btns">
+      <button type="button" class="btn-cancel" onclick="closeModal()">취소</button>
+      <button type="button" class="btn-save" onclick="saveScriptUrl()">저장 및 연결</button>
+    </div>
+  </div>
+</div>
+<!-- JO MODAL -->
+<div class="modal-bg" id="jo-modal-bg">
+  <div class="modal" style="max-width:420px;">
+    <h3>조 편집</h3>
+    <p style="margin-bottom:8px;">조번호, 훈련자(조장), 훈련자, 훈련생을 입력하세요. 저장 후 드롭다운에 반영됩니다.</p>
+    <div id="jo-editor-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px;max-height:52vh;overflow-y:auto;"></div>
+    <button type="button" onclick="addJoRow()" style="width:100%;background:rgba(32,80,200,0.07);border:1.5px dashed rgba(32,80,200,0.3);color:#2050c8;border-radius:6px;padding:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;margin-bottom:10px;">+ 조 추가</button>
+    <div class="modal-btns">
+      <button type="button" class="btn-cancel" onclick="closeJoModal()">취소</button>
+      <button type="button" class="btn-save" onclick="saveJoData()">저장</button>
+    </div>
+  </div>
+</div>
+<div class="status-bar" id="status-bar"></div>
+
+<script>
+// iOS radio touch fix
+(function(){var _t=0;document.addEventListener('touchstart',function(e){if(e.target.matches('.rb input[type=radio],.yj-btn input[type=radio]'))_t=Date.now();},{passive:true});document.addEventListener('touchend',function(e){var i=e.target;if(!i.matches('.rb input[type=radio],.yj-btn input[type=radio]'))return;if(Date.now()-_t<300){e.preventDefault();if(!i.checked){i.checked=true;i.dispatchEvent(new Event('change',{bubbles:true}));}}},{passive:false});})();
+
+const LS_KEY='report_test_records';
+const LS_SEQ='report_seq_counter';
+const ROLES=['서론','은혜','인간','하나님','그리스도','믿음','결신','즉석양육'];
+const MEMBERS=[{id:'leader',label:'훈련자(조장)',color:'#1a3a9e'},{id:'trainer',label:'훈련자',color:'#2050c8'},{id:'trainee',label:'훈련생',color:'#5c7cbb'}];
+const DIAG_MAP={'있었고_믿음':{diag:'머리신자 / 이미신자',badge:'orange'},'있었고_etc':{diag:'착각비신자',badge:'red'},'없었고_믿음':{diag:'확신부족 / 비신자',badge:'blue-purple'},'없었고_etc':{diag:'비신자',badge:'purple'}};
+let currentMode=localStorage.getItem('report_mode')||'test';
+let scriptUrl=localStorage.getItem('apps_script_url')||'https://script.google.com/macros/s/AKfycbypxiCgaEIyej8F0UTnBf9AWS2_vcWv-GudBkljTSDHNB1w2bX6iUMCTqZcf_QSHI5N/exec';
+var _lastSavedDiagResult='';
+const LS_DRAFT='report_draft';
+
+function saveDraft(){
+  var data=collectFormData();
+  data._draftAt=new Date().toLocaleString('ko-KR');
+  localStorage.setItem(LS_DRAFT,JSON.stringify(data));
+  var toast=document.getElementById('draft-toast');
+  toast.classList.add('show');
+  setTimeout(function(){toast.classList.remove('show');},2000);
+}
+
+function loadDraft(){
+  try{
+    var d=JSON.parse(localStorage.getItem(LS_DRAFT));
+    if(!d)return false;
+    if(!confirm('임시저장된 내용이 있습니다.\n불러오시겠습니까?\n(저장일시: '+d._draftAt+')'))return false;
+    applyFormData(d);
+    localStorage.removeItem(LS_DRAFT);
+    showStatus('📝 임시저장 내용을 불러왔습니다.','info');
+    return true;
+  }catch{return false;}
+}
+
+function applyFormData(r){
+  var sv=function(id,val){var el=document.getElementById(id);if(el)el.value=val||'';};
+  var sr=function(name,val){document.querySelectorAll('input[name="'+name+'"]').forEach(function(el){el.checked=el.value===val;});};
+  if(r.week)sv('report-week',r.week);if(r.date)sv('report-date',r.date);
+  sv('doc_number',r.doc_number);
+  var et=document.getElementById('evang_type');if(et)et.value=r.evang_type||'';
+  sv('evang_count',r.evang_count);
+  var js=document.getElementById('q1_jo');if(js)js.value=r.jo||'';
+  sv('q2_leader',r.leader);sv('q2_trainer',r.trainer);sv('q2_trainee1',r.trainee1);
+  ['contact','gospel','target','decision','reject','confirm','believer'].forEach(function(k){sv('t_'+k,r[k]);});
+  sv('q3_location',r.location);
+  var tt=document.getElementById('q3_target_type');if(tt)tt.value=r.target_type||'';
+  sv('q3_name',r.name);sv('q3_age',r.age);
+  sr('marriage',r.marriage);sr('gender',r.gender);
+  setReligionValue(r.religion||'');sv('q4_job',r.job);
+  sr('heaven',r.heaven);sr('reason',r.reason);sr('yeopjeop',r.yeopjeop);
+  sv('diag-saved-result',r.diag_result);
+  sr('testimony6',r.testimony6);sr('testimony7',r.testimony7);
+  MEMBERS.forEach(function(m){
+    sv('q8_'+m.id+'_part',r[m.id+'_part']);
+    sr(m.id+'_action',r[m.id+'_action']);
+    var roles=(r[m.id+'_part']||'').split(', ');
+    document.querySelectorAll('input[name="'+m.id+'_role"]').forEach(function(el){el.checked=roles.indexOf(el.value)>-1;});
+    updateRoleText(m.id);
+  });
+  sv('q8_result',r.result);sr('immed_nurture',r.immed_nurture);
+  document.querySelectorAll('input[name="followup"]').forEach(function(el){el.checked=el.value===r.followup;});
+  updateFollowup();
+  ['q10','q11','q12','q13'].forEach(function(k){sv(k,r[k]);});
+  onQ5Change();
+  if(radio('heaven'))document.getElementById('diag-card').style.display='block';
+  syncPreview();
+}
+
+const LS_JO='report_jo_data';
+const DEFAULT_JO=[
+  {jo:'1',leader:'전태룡',trainer:'유연희',trainee:'전주영'},
+  {jo:'2',leader:'유정훈',trainer:'장유미',trainee:'유세미'}
+];
+function getJoData(){try{var d=JSON.parse(localStorage.getItem(LS_JO));return(d&&d.length)?d:DEFAULT_JO;}catch{return DEFAULT_JO;}}
+function saveJoDataLS(arr){localStorage.setItem(LS_JO,JSON.stringify(arr));}
+function buildJoDropdown(){var sel=document.getElementById('q1_jo');var cur=sel.value;sel.innerHTML='<option value="">조 선택</option>';getJoData().forEach(function(j){var opt=document.createElement('option');opt.value=j.jo;opt.textContent=j.jo+'조';sel.appendChild(opt);});if(cur)sel.value=cur;}
+const LS_RELIGION='report_religion_list';
+const DEFAULT_RELIGIONS=['기독교','천주교','불교','무교'];
+function getReligionList(){try{var d=JSON.parse(localStorage.getItem(LS_RELIGION));return(d&&d.length)?d:DEFAULT_RELIGIONS.slice();}catch{return DEFAULT_RELIGIONS.slice();}}
+function saveReligionList(arr){localStorage.setItem(LS_RELIGION,JSON.stringify(arr));}
+function buildReligionDropdown(selectVal){var sel=document.getElementById('q4_religion_sel');var cur=selectVal!==undefined?selectVal:sel.value;sel.innerHTML='<option value="">선택</option>';getReligionList().forEach(function(r){var opt=document.createElement('option');opt.value=r;opt.textContent=r;sel.appendChild(opt);});var dirOpt=document.createElement('option');dirOpt.value='__direct__';dirOpt.textContent='직접입력';sel.appendChild(dirOpt);if(cur)sel.value=cur;}
+function onReligionSelect(){var sel=document.getElementById('q4_religion_sel');var inp=document.getElementById('q4_religion');var btn=document.getElementById('religion-reg-btn');if(sel.value==='__direct__'){inp.style.display='block';btn.style.display='block';inp.value='';inp.focus();}else{inp.style.display='none';btn.style.display='none';inp.value=sel.value;}syncPreview();}
+function registerReligion(){var inp=document.getElementById('q4_religion');var val=inp.value.trim();if(!val){showStatus('종교명을 입력하세요.','error');return;}var list=getReligionList();if(list.indexOf(val)===-1){list.push(val);saveReligionList(list);buildReligionDropdown(val);document.getElementById('q4_religion').style.display='none';document.getElementById('religion-reg-btn').style.display='none';inp.value=val;showStatus('✅ "'+val+'" 이(가) 목록에 등록되었습니다.','success');}else{buildReligionDropdown(val);document.getElementById('q4_religion').style.display='none';document.getElementById('religion-reg-btn').style.display='none';showStatus('"'+val+'" 은(는) 이미 목록에 있습니다.','info');}syncPreview();}
+function getReligionValue(){var sel=document.getElementById('q4_religion_sel');return sel.value==='__direct__'?document.getElementById('q4_religion').value:sel.value;}
+function setReligionValue(val){buildReligionDropdown('');var sel=document.getElementById('q4_religion_sel');var inp=document.getElementById('q4_religion');var btn=document.getElementById('religion-reg-btn');var list=getReligionList();if(!val){sel.value='';inp.style.display='none';btn.style.display='none';inp.value='';}else if(list.indexOf(val)>-1){sel.value=val;inp.style.display='none';btn.style.display='none';inp.value=val;}else{sel.value='__direct__';inp.style.display='block';btn.style.display='block';inp.value=val;}}
+function onJoSelect(){var jo=document.getElementById('q1_jo').value;var found=getJoData().find(function(j){return j.jo===jo;});if(found){document.getElementById('q2_leader').value=found.leader||'';document.getElementById('q2_trainer').value=found.trainer||'';document.getElementById('q2_trainee1').value=found.trainee||'';}else{document.getElementById('q2_leader').value='';document.getElementById('q2_trainer').value='';document.getElementById('q2_trainee1').value='';}syncPreview();}
+function openJoModal(){var arr=getJoData();var el=document.getElementById('jo-editor-list');el.innerHTML='';arr.forEach(function(j,i){el.appendChild(makeJoRow(j,i));});document.getElementById('jo-modal-bg').classList.add('open');}
+function closeJoModal(){document.getElementById('jo-modal-bg').classList.remove('open');}
+function makeJoRow(j,i){var div=document.createElement('div');div.style.cssText='display:flex;gap:6px;align-items:center;background:#f7f9ff;border:1px solid rgba(32,80,200,0.13);border-radius:6px;padding:7px 8px;';div.innerHTML='<input data-f="jo" value="'+(j.jo||'')+'" placeholder="조번호" style="width:52px;text-align:center;font-weight:700;border:1px solid rgba(0,0,20,0.15);border-radius:5px;padding:6px 4px;font-size:13px;font-family:\'Noto Sans KR\',sans-serif;outline:none;"><input data-f="leader" value="'+(j.leader||'')+'" placeholder="조장" style="flex:1;border:1px solid rgba(0,0,20,0.15);border-radius:5px;padding:6px 6px;font-size:13px;font-family:\'Noto Sans KR\',sans-serif;outline:none;"><input data-f="trainer" value="'+(j.trainer||'')+'" placeholder="훈련자" style="flex:1;border:1px solid rgba(0,0,20,0.15);border-radius:5px;padding:6px 6px;font-size:13px;font-family:\'Noto Sans KR\',sans-serif;outline:none;"><input data-f="trainee" value="'+(j.trainee||'')+'" placeholder="훈련생" style="flex:1;border:1px solid rgba(0,0,20,0.15);border-radius:5px;padding:6px 6px;font-size:13px;font-family:\'Noto Sans KR\',sans-serif;outline:none;"><button type="button" onclick="this.closest(\'div\').remove()" style="background:#fdecea;border:none;border-radius:5px;color:#c00;font-size:13px;font-weight:700;cursor:pointer;padding:5px 8px;flex-shrink:0;">✕</button>';return div;}
+function addJoRow(){var el=document.getElementById('jo-editor-list');el.appendChild(makeJoRow({jo:'',leader:'',trainer:'',trainee:''},el.children.length));el.lastChild.querySelector('input').focus();}
+function saveJoData(){var rows=[].slice.call(document.querySelectorAll('#jo-editor-list > div'));var arr=rows.map(function(row){var ins=row.querySelectorAll('input');return{jo:ins[0].value.trim(),leader:ins[1].value.trim(),trainer:ins[2].value.trim(),trainee:ins[3].value.trim()};}).filter(function(j){return j.jo;});saveJoDataLS(arr);buildJoDropdown();closeJoModal();showStatus('✅ 조 정보가 저장되었습니다.','success');}
+
+window.onload=function(){buildRoleSections();buildJoDropdown();buildReligionDropdown();document.getElementById('report-date').value=new Date().toISOString().split('T')[0];if(scriptUrl){currentMode='server';}applyMode(currentMode,false);syncRoleAvailability();syncPreview();loadDraft();};
+
+function buildRoleSections(){MEMBERS.forEach(function(m){document.getElementById('role-'+m.id).innerHTML='<div class="lbl" style="margin-bottom:7px;"><span class="role-badge" style="background:'+m.color+';">'+m.label+'</span> 담당 역할</div><div class="multiselect-wrap" id="'+m.id+'-ms-wrap"><div class="ms-trigger" onclick="toggleDropdown(\''+m.id+'\',event)"><span class="ms-display" id="'+m.id+'-ms-display">선택하세요</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown" id="'+m.id+'-ms-dropdown">'+ROLES.map(function(r){return'<label class="ms-item"><input type="checkbox" name="'+m.id+'_role" value="'+r+'" onchange="updateRoleText(\''+m.id+'\');syncPreview()"> '+r+'</label>';}).join('')+'</div></div><input type="hidden" id="q8_'+m.id+'_part"><div class="ms-tags" id="'+m.id+'-ms-tags"></div><div class="rg" style="margin-top:9px;"><div class="rb"><input type="radio" name="'+m.id+'_action" value="하였고" id="'+m.id+'_a1" onchange="syncPreview()"><label for="'+m.id+'_a1">하였고</label></div><div class="rb"><input type="radio" name="'+m.id+'_action" value="참관하였고" id="'+m.id+'_a2" onchange="syncPreview()"><label for="'+m.id+'_a2">참관하였고</label></div><div class="rb"><input type="radio" name="'+m.id+'_action" value="불참하였고" id="'+m.id+'_a3" onchange="syncPreview()"><label for="'+m.id+'_a3">불참하였고</label></div></div></div>';});
+  MEMBERS.forEach(function(m){var def=document.getElementById(m.id+'_a2');if(def)def.checked=true;});
+}
+
+function setMode(mode){currentMode=mode;localStorage.setItem('report_mode',mode);applyMode(mode,true);}
+
+function updateScbState(state){
+  var scb=document.getElementById('server-connected-badge');
+  if(!scb)return;
+  scb.classList.remove('state-ok','state-warn','state-error');
+  scb.classList.add('state-'+state);
+  var label=scb.querySelector('.scb-label');
+  if(state==='ok')label.textContent='연결됨';
+  else if(state==='warn')label.textContent='미연결';
+  else label.textContent='오류';
+}
+
+function applyMode(mode,announce){var t=mode==='test';document.getElementById('btn-test').className='mode-btn'+(t?' active-test':'');document.getElementById('btn-server').className='mode-btn'+(!t?' active-server':'');var btn=document.getElementById('submit-btn');btn.className='subbtn '+(t?'test-mode':'server-mode');btn.textContent=t?'💾 테스트 저장':'📤 구글 시트에 제출';var hp=document.getElementById('history-page');hp.className=(hp.classList.contains('active')?'page active ':'page ')+(t?'test-bg':'server-bg');document.getElementById('history-title').className=t?'test':'server';document.getElementById('history-title').textContent=t?'TEST RECORDS':'SERVER RECORDS';document.getElementById('refresh-btn').className='h-btn outline '+mode;document.getElementById('search-btn').className='h-btn outline '+mode;document.getElementById('new-btn').className='h-btn primary '+mode;
+  var scb=document.getElementById('server-connected-badge');
+  if(scb){
+    if(!t){scb.classList.add('visible');updateScbState(scriptUrl?'ok':'warn');}
+    else{scb.classList.remove('visible');}
+  }
+  if(announce){showStatus(t?'🧪 테스트 모드':'☁️ 서버 모드',t?'info':'success');loadHistory();}}
+function handleSheetBtn(){currentMode==='server'?openModal():(setMode('server'),openModal());}
+
+function switchTab(tab){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById(tab+'-page').classList.add('active');
+  var labels={form:'작성',preview:'미리보기',history:'기록'};
+  document.querySelectorAll('.tab-btn').forEach(function(b){if(b.textContent.includes(labels[tab]))b.classList.add('active');});
+  if(tab==='preview')syncPreview();
+  if(tab==='history')loadHistory();
+}
+
+function openModal(){document.getElementById('script-url-input').value=scriptUrl;document.getElementById('modal-bg').classList.add('open');}
+function closeModal(){document.getElementById('modal-bg').classList.remove('open');}
+function saveScriptUrl(){var url=document.getElementById('script-url-input').value.trim();if(url&&!url.includes('script.google.com')){showStatus('올바른 Apps Script URL을 입력하세요.','error');return;}scriptUrl=url;localStorage.setItem('apps_script_url',url);closeModal();if(url){showStatus('✅ 연결 완료!','success');setMode('server');updateScbState('ok');}else{updateScbState('warn');}}
+function copyCode(){navigator.clipboard.writeText(document.getElementById('apps-script-code').textContent).then(function(){showStatus('코드가 복사되었습니다!','success');});}
+
+function toggleDropdown(who,event){if(event)event.stopPropagation();var trigger=document.querySelector('#'+who+'-ms-wrap .ms-trigger');var dropdown=document.getElementById(who+'-ms-dropdown');var isOpen=dropdown.classList.contains('open');document.querySelectorAll('.ms-dropdown').forEach(function(d){d.classList.remove('open');});document.querySelectorAll('.ms-trigger').forEach(function(t){t.classList.remove('open');});if(!isOpen){dropdown.classList.add('open');trigger.classList.add('open');}}
+document.addEventListener('click',function(e){if(!e.target.closest('.multiselect-wrap')){document.querySelectorAll('.ms-dropdown').forEach(function(d){d.classList.remove('open');});document.querySelectorAll('.ms-trigger').forEach(function(t){t.classList.remove('open');});}});
+function updateRoleText(who){var checked=[].slice.call(document.querySelectorAll('input[name="'+who+'_role"]:checked')).map(function(e){return e.value;});var hidden=document.getElementById('q8_'+who+'_part');var display=document.getElementById(who+'-ms-display');var tags=document.getElementById(who+'-ms-tags');if(hidden)hidden.value=checked.join(', ');if(display){display.textContent=checked.length?checked.join(', '):'선택하세요';display.classList.toggle('has-value',checked.length>0);}if(tags)tags.innerHTML=checked.map(function(v){return'<span class="ms-tag">'+v+'<span class="ms-tag-x" onclick="removeRole(\''+who+'\',\''+v+'\')">✕</span></span>';}).join('');
+  var a1=document.getElementById(who+'_a1');var a2=document.getElementById(who+'_a2');
+  if(a1&&a2){if(checked.length>0){a1.checked=true;a2.checked=false;}else{a1.checked=false;a2.checked=true;}}
+  syncRoleAvailability();}
+function syncRoleAvailability(){var usedBy={};ROLES.forEach(function(r){usedBy[r]=[];});MEMBERS.forEach(function(m){document.querySelectorAll('input[name="'+m.id+'_role"]:checked').forEach(function(cb){usedBy[cb.value].push(m.id);});});MEMBERS.forEach(function(m){ROLES.forEach(function(r){var cb=document.querySelector('input[name="'+m.id+'_role"][value="'+r+'"]');if(!cb)return;var takenByOther=usedBy[r].length>0&&usedBy[r].indexOf(m.id)===-1;cb.disabled=takenByOther;var item=cb.closest('.ms-item');if(item){item.style.opacity=takenByOther?'0.35':'1';item.style.pointerEvents=takenByOther?'none':'auto';var owner=takenByOther?MEMBERS.find(function(x){return x.id===usedBy[r][0];}):null;item.title=owner?('이미 '+owner.label+'이(가) 선택함'):'';}}); });}
+function removeRole(who,val){var cb=document.querySelector('input[name="'+who+'_role"][value="'+val+'"]');if(cb){cb.checked=false;updateRoleText(who);syncPreview();}}
+function updateFollowup(){
+  var sel=document.querySelector('input[name="followup"]:checked');
+  var val=sel?sel.value:'';
+  var display=document.getElementById('followup-ms-display');
+  var tags=document.getElementById('followup-ms-tags');
+  display.textContent=val||'선택하세요';
+  display.classList.toggle('has-value',!!val);
+  tags.innerHTML=val?'<span class="ms-tag">'+val+'<span class="ms-tag-x" onclick="removeFollowup(\'' +val+ '\')">✕</span></span>':'';
+}
+function removeFollowup(val){var rb=document.querySelector('input[name="followup"][value="'+val+'"]');if(rb){rb.checked=false;updateFollowup();syncPreview();}}
+
+function onTestimony6Change(){
+  var t6=radio('testimony6'),hv=radio('heaven'),rs=radio('reason');
+  if(t6==='이미신자'&&hv==='있었고'&&rs==='믿음'){
+    document.querySelectorAll('.yj-btn input[type=radio]').forEach(function(r){r.checked=(r.value==='불필요');r.disabled=(r.value!=='불필요');});
+    var fv=document.getElementById('diag-final-val');
+    fv.textContent='이미신자';fv.className='diag-final-val 이미신자';
+    document.getElementById('diag-final-row').style.display='flex';
+    document.getElementById('diag-saved-result').value='진단: 이미신자 | 영접: 불필요 | 결과: 이미신자';
+  } else {
+    resetDiagCard();
+  }
+}
+function getDiagInfo(hv,rs){return DIAG_MAP[hv+'_'+(rs==='믿음'?'믿음':'etc')]||null;}
+
+function diagBadgeHtml(info){
+  var badge=info.badge==='blue-purple'?'orange':info.badge;
+  return '<span class="diag-badge '+badge+'">'+info.diag+'</span>';
+}
+function diagNameClass(info){return info.badge==='blue-purple'?'diag-name orange':'diag-name';}
+
+function calcResult(hv,rs,yj){
+  if(yj==='불필요') return (hv==='있었고'&&rs==='믿음'&&radio('testimony6')==='이미신자')?'이미신자':'-';
+  if(yj==='영접') return (hv==='없었고'&&rs==='믿음')?(radio('testimony7')==='비신자'?'결신':'확신'):'결신';
+  return '보류 / 거부';
+}
+
+function resetDiagCard(){
+  document.querySelectorAll('.yj-btn input[type=radio]').forEach(function(r){r.checked=false;r.disabled=false;});
+  document.getElementById('diag-name').textContent='—';
+  document.getElementById('diag-hv').textContent='—';
+  document.getElementById('diag-rs').textContent='—';
+  document.getElementById('diag-badge-wrap').innerHTML='';
+  document.getElementById('diag-final-val').textContent='';
+  document.getElementById('diag-final-row').style.display='none';
+  document.getElementById('diag-saved-result').value='';
+}
+
+function updateDiagFromSubResult(){
+  var hv=radio('heaven'),rs=radio('reason');
+  if(!hv||!rs)return;
+  var info=getDiagInfo(hv,rs);if(!info)return;
+  var nameEl=document.getElementById('diag-name'),badgeEl=document.getElementById('diag-badge-wrap');
+  if(hv==='없었고'&&rs==='믿음'){
+    var t7=radio('testimony7');
+    if(t7){
+      var badge=t7==='확신부족신자'?'blue':'purple';
+      nameEl.textContent=t7;nameEl.className='diag-name';
+      badgeEl.innerHTML='<span class="diag-badge '+badge+'">'+t7+'</span>';
+      return;
+    }
+  }
+  nameEl.textContent=info.diag;
+  nameEl.className=diagNameClass(info);
+  badgeEl.innerHTML=diagBadgeHtml(info);
+}
+
+function resetQ5(){
+  document.querySelectorAll('input[name="heaven"],input[name="reason"]').forEach(function(r){r.checked=false;});
+  document.querySelectorAll('input[name="testimony6"],input[name="testimony7"]').forEach(function(r){r.checked=false;r.disabled=false;});
+  ['cond6-section','cond7-section','cond8-section'].forEach(function(id){document.getElementById(id).style.display='none';});
+  resetDiagCard();
+  document.getElementById('diag-hv').textContent='—';
+  document.getElementById('diag-rs').textContent='—';
+  document.getElementById('diag-card').style.display='none';
+  document.querySelectorAll('#diag-ref-table tbody tr').forEach(function(tr){tr.classList.remove('active-row');});
+  syncPreview();
+}
+
+function onQ5Change(){
+  var hv=radio('heaven'),rs=radio('reason');
+  document.getElementById('cond6-section').style.display=(hv==='있었고'&&rs==='믿음')?'block':'none';
+  document.getElementById('cond7-section').style.display=(hv==='없었고'&&rs==='믿음')?'block':'none';
+  document.getElementById('cond8-section').style.display=(hv&&rs)?'block':'none';
+  var rsG=(rs==='행위'||rs==='불확실'||rs==='대답안함')?'etc':rs;
+  document.querySelectorAll('#diag-ref-table tbody tr').forEach(function(tr){tr.classList.toggle('active-row',tr.dataset.hv===hv&&tr.dataset.rs===rsG);});
+  if(hv)document.getElementById('diag-card').style.display='block';
+  resetDiagCard();
+  var info=getDiagInfo(hv,rs);
+  if(!hv||!rs||!info){syncPreview();return;}
+  document.getElementById('diag-name').textContent=info.diag;
+  document.getElementById('diag-name').className=diagNameClass(info);
+  document.getElementById('diag-hv').textContent='천국 확신 '+hv;
+  document.getElementById('diag-rs').textContent=rs;
+  document.getElementById('diag-badge-wrap').innerHTML=diagBadgeHtml(info);
+  updateDiagFromSubResult();syncPreview();
+}
+function onYeopjeopChange(){
+  var hv=radio('heaven'),rs=radio('reason'),yj=radio('yeopjeop');
+  if(!hv||!rs||!yj)return;
+  var info=getDiagInfo(hv,rs);if(!info)return;
+  var result=calcResult(hv,rs,yj);
+  var clsMap={'결신':'결신','이미신자':'이미신자','확신':'확신','보류 / 거부':'보류거부','-':'보류거부'};var cls=clsMap[result]||result;
+  var fv=document.getElementById('diag-final-val');
+  fv.textContent=result;fv.className='diag-final-val '+cls;
+  document.getElementById('diag-final-row').style.display='flex';
+  document.getElementById('diag-saved-result').value='진단: '+info.diag+' | 영접: '+yj+' | 결과: '+result;
+  var resultEl=document.getElementById('q8_result');if(resultEl)resultEl.value=result;
+  if(result==='보류 / 거부'){
+    var inEl=document.querySelector('input[name="immed_nurture"][value="안했고"]');if(inEl)inEl.checked=true;
+    document.querySelectorAll('input[name="followup"]').forEach(function(cb){cb.checked=cb.value==='하지 못';});
+    updateFollowup();
+  }
+  syncPreview();
+}
+function saveDiagResult(){
+  var yj=radio('yeopjeop');
+  if(!yj){showStatus('영접 여부를 먼저 선택하세요.','error');return;}
+  var saved=v('diag-saved-result');
+  if(!saved){showStatus('진단 결과가 없습니다.','error');return;}
+  if(saved!==_lastSavedDiagResult){
+    var result=calcResult(radio('heaven'),radio('reason'),yj);
+    var map={'결신':'t_decision','이미신자':'t_believer','확신':'t_confirm','보류 / 거부':'t_reject'};
+    if(map[result]){var cntEl=document.getElementById(map[result]);if(cntEl)cntEl.value=(parseInt(cntEl.value)||0)+1;}
+    _lastSavedDiagResult=saved;
+  }
+  var btn=document.querySelector('.diag-save-btn');btn.textContent='✅ 저장됨';btn.style.background='#1a6b3c';setTimeout(function(){btn.textContent='진단결과 저장 →';btn.style.background='';},2000);showStatus('✅ 진단결과가 통계에 반영되었습니다.','success');syncPreview();
+}
+
+function v(id){var el=document.getElementById(id);return el?el.value:'';}
+function radio(n){var el=document.querySelector('input[name="'+n+'"]:checked');return el?el.value:'';}
+function getNextSeq(){var n=(parseInt(localStorage.getItem(LS_SEQ)||'0')||0)+1;localStorage.setItem(LS_SEQ,n);return n;}
+function collectFormData(){return{week:v('report-week'),date:v('report-date'),doc_number:v('doc_number'),evang_type:v('evang_type'),evang_count:v('evang_count'),jo:v('q1_jo'),leader:v('q2_leader'),trainer:v('q2_trainer'),trainee1:v('q2_trainee1'),contact:v('t_contact'),gospel:v('t_gospel'),target:v('t_target'),decision:v('t_decision'),reject:v('t_reject'),confirm:v('t_confirm'),believer:v('t_believer'),location:v('q3_location'),target_type:v('q3_target_type'),name:v('q3_name'),age:v('q3_age'),marriage:radio('marriage'),gender:radio('gender'),religion:getReligionValue(),job:v('q4_job'),heaven:radio('heaven'),reason:radio('reason'),yeopjeop:radio('yeopjeop'),diag_result:v('diag-saved-result'),testimony6:radio('testimony6'),testimony7:radio('testimony7'),leader_part:v('q8_leader_part'),leader_action:radio('leader_action'),trainer_part:v('q8_trainer_part'),trainer_action:radio('trainer_action'),trainee_part:v('q8_trainee_part'),trainee_action:radio('trainee_action'),result:v('q8_result'),immed_nurture:radio('immed_nurture'),followup:radio('followup'),q10:v('q10'),q11:v('q11'),q12:v('q12'),q13:v('q13')};}
+
+async function handleSubmit(){currentMode==='test'?await submitTest():await submitServer();}
+async function submitTest(){var btn=document.getElementById('submit-btn');btn.disabled=true;btn.textContent='⏳ 저장 중...';var data=Object.assign({},collectFormData(),{_seq:getNextSeq(),_id:Date.now(),_savedAt:new Date().toLocaleString('ko-KR'),_source:'test'});var recs=getLocalRecords();recs.unshift(data);localStorage.setItem(LS_KEY,JSON.stringify(recs));showStatus('💾 테스트 저장 완료!','info');resetForm();setTimeout(function(){switchTab('history');},900);btn.disabled=false;btn.textContent='💾 테스트 저장';}
+async function submitServer(){if(!scriptUrl){openModal();showStatus('먼저 구글 시트를 연결해 주세요.','error');return;}var btn=document.getElementById('submit-btn');btn.disabled=true;btn.textContent='⏳ 제출 중...';try{var payload=Object.assign({},collectFormData(),{_seq:getNextSeq()});var res=await fetch(scriptUrl,{method:'POST',body:JSON.stringify(payload)});var json=await res.json();if(json.status==='ok'){showStatus('✅ 구글 시트에 제출 완료!','success');updateScbState('ok');resetForm();setTimeout(function(){switchTab('history');},900);}else throw new Error(json.message||'제출 실패');}catch(e){showStatus('❌ 제출 실패: '+e.message,'error');updateScbState('error');}btn.disabled=false;btn.textContent='📤 구글 시트에 제출';}
+function getLocalRecords(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'[]');}catch{return[];}}
+
+function toggleSearch(){
+  var bar=document.getElementById('search-bar');
+  var btn=document.getElementById('search-btn');
+  var visible=bar.style.display!=='none';
+  bar.style.display=visible?'none':'flex';
+  if(!visible){document.getElementById('search-input').focus();}
+  else{clearSearch();}
+}
+
+function filterHistory(){
+  var type=document.getElementById('search-type').value;
+  var q=document.getElementById('search-input').value.trim().toLowerCase();
+  var cards=document.querySelectorAll('#history-list .record-card');
+  if(!q){cards.forEach(function(c){c.style.display='';});return;}
+  cards.forEach(function(c,i){
+    var r=window._historyRecords&&window._historyRecords[i];
+    if(!r){c.style.display='none';return;}
+    var val=(r[type]||'').toString().toLowerCase();
+    c.style.display=val.includes(q)?'':'none';
+  });
+}
+
+function clearSearch(){
+  document.getElementById('search-input').value='';
+  filterHistory();
+}
+
+async function loadHistory(){currentMode==='test'?renderHistory(getLocalRecords(),'test'):await loadServerHistory();}
+async function loadServerHistory(){var list=document.getElementById('history-list');if(!scriptUrl){list.innerHTML='<div class="empty-state"><span class="es-icon">🔗</span><p>구글 시트가 연결되지 않았습니다.<br><button onclick="openModal()" style="margin-top:8px;background:#2050c8;color:#fff;border:none;border-radius:6px;padding:7px 16px;cursor:pointer;font-size:12px;font-family:\'Noto Sans KR\',sans-serif;">⚙️ 지금 연결하기</button></p></div>';return;}list.innerHTML='<div class="empty-state"><span class="es-icon">⏳</span><p>불러오는 중...</p></div>';try{var res=await fetch(scriptUrl+'?action=get');var json=await res.json();if(json.status!=='ok')throw new Error(json.message);var records=(json.records||[]).map(function(r,idx){var v=Object.values(r);return{_savedAt:v[0]||'',_source:'server',_seq:r._seq||null,jo:v[1],leader:v[2],trainer:v[3],trainee1:v[4],contact:v[5],gospel:v[6],target:v[7],decision:v[8],reject:v[9],confirm:v[10],believer:v[11],location:v[12],name:v[13],age:v[14],marriage:v[15],gender:v[16],religion:v[17],job:v[18],heaven:v[19],reason:v[20],yeopjeop:v[21],diag_result:v[22],testimony6:v[23],testimony7:v[24],leader_part:v[25],leader_action:v[26],trainer_part:v[27],trainer_action:v[28],trainee_part:v[29],trainee_action:v[30],result:v[31],immed_nurture:v[32],followup:v[33],q10:v[34],q11:v[35],q12:v[36],q13:v[37]};});renderHistory(records,'server');}catch(e){list.innerHTML='<div class="empty-state"><span class="es-icon">❌</span><p>불러오기 실패: '+e.message+'</p></div>';updateScbState('error');}}
+function renderHistory(records,src){
+  // 검색바 표시 (기록 있을 때만)
+  var bar=document.getElementById('search-bar');
+  if(bar&&records&&records.length>0)bar.style.display='flex';
+  else if(bar)bar.style.display='none';
+  clearSearch();
+  var list=document.getElementById('history-list');if(!records||!records.length){list.innerHTML='<div class="empty-state"><span class="es-icon">📄</span><p>제출된 보고서가 없습니다.</p></div>';return;}window._historyRecords=records;list.innerHTML=records.map(function(r,i){var seqLabel=r._seq?'#'+r._seq:'#'+(records.length-i);return'<div class="record-card" onclick="loadRecord('+i+')"><div class="rc-top"><div><div class="rc-title '+src+'"><span class="rc-seq-badge">'+seqLabel+'</span> '+(r.jo?r.jo+'조 ':'')+'현장전도 보고서 <span class="src-badge '+src+'">'+(src==='test'?'TEST':'SERVER')+'</span></div><div class="rc-meta">👑 '+(r.leader||'—')+' &nbsp;👤 '+(r.trainer||'—')+(r.trainee1?', '+r.trainee1:'')+'<br>📍 '+(r.location||'—')+' '+(r.name?r.name+'씨':'')+' '+(r.age?r.age+'세':'')+'</div></div><div class="rc-date">'+(r._savedAt||'')+'</div></div><div class="rc-stats"><span class="stat-chip neutral">접촉 '+(r.contact||0)+'회</span><span class="stat-chip blue">복음제시 '+(r.gospel||0)+'회</span><span class="stat-chip red">결신 '+(r.decision||0)+'명</span></div><button class="load-btn '+src+'" onclick="event.stopPropagation();loadRecord('+i+')">불러오기 →</button></div>';}).join('');}
+
+function loadRecord(idx){var r=window._historyRecords[idx];if(!r)return;var sv=function(id,val){var el=document.getElementById(id);if(el)el.value=val||'';};var sr=function(name,val){document.querySelectorAll('input[name="'+name+'"]').forEach(function(el){el.checked=el.value===val;});};if(r.week)sv('report-week',r.week);if(r.week){var ws=document.getElementById('report-week');if(ws)ws.value=r.week||'';}if(r.date)sv('report-date',r.date);sv('doc_number',r.doc_number);var et=document.getElementById('evang_type');if(et)et.value=r.evang_type||'';sv('evang_count',r.evang_count);var js=document.getElementById('q1_jo');if(js){js.value=r.jo||'';}sv('q2_leader',r.leader);sv('q2_trainer',r.trainer);sv('q2_trainee1',r.trainee1);['contact','gospel','target','decision','reject','confirm','believer'].forEach(function(k){sv('t_'+k,r[k]);});sv('q3_location',r.location);var tt=document.getElementById('q3_target_type');if(tt)tt.value=r.target_type||'';sv('q3_name',r.name);sv('q3_age',r.age);sr('marriage',r.marriage);sr('gender',r.gender);setReligionValue(r.religion||'');sv('q4_job',r.job);sr('heaven',r.heaven);sr('reason',r.reason);sr('yeopjeop',r.yeopjeop);sv('diag-saved-result',r.diag_result);sr('testimony6',r.testimony6);sr('testimony7',r.testimony7);MEMBERS.forEach(function(m){sv('q8_'+m.id+'_part',r[m.id+'_part']);sr(m.id+'_action',r[m.id+'_action']);var roles=(r[m.id+'_part']||'').split(', ');document.querySelectorAll('input[name="'+m.id+'_role"]').forEach(function(el){el.checked=roles.indexOf(el.value)>-1;});updateRoleText(m.id);});sv('q8_result',r.result);sr('immed_nurture',r.immed_nurture);var fuVal=r.followup||'';document.querySelectorAll('input[name="followup"]').forEach(function(el){el.checked=el.value===fuVal;});updateFollowup();['q10','q11','q12','q13'].forEach(function(k){sv(k,r[k]);});onQ5Change();if(radio('heaven'))document.getElementById('diag-card').style.display='block';switchTab('form');showStatus('✅ 기록을 불러왔습니다.','success');}
+
+function resetForm(){_lastSavedDiagResult='';localStorage.removeItem(LS_DRAFT);document.querySelectorAll('#form-page input[type=text],#form-page input[type=number],#form-page textarea').forEach(function(el){el.value='';});document.querySelectorAll('#form-page input[type=radio],#form-page input[type=checkbox]').forEach(function(el){el.checked=false;});document.getElementById('report-date').value=new Date().toISOString().split('T')[0];var et=document.getElementById('evang_type');if(et)et.value='';var js=document.getElementById('q1_jo');if(js)js.value='';setReligionValue('');MEMBERS.forEach(function(m){updateRoleText(m.id);});syncRoleAvailability();updateFollowup();onQ5Change();resetDiagCard();document.getElementById('diag-card').style.display='none';}
+
+function setEl(id,val){var el=document.getElementById(id);if(el)el.textContent=(val||'').trim()||'\u00a0';}
+function syncPreview(){var dv=v('report-date');if(dv){var parts=dv.split('-');setEl('p_year',parts[0].slice(2));setEl('p_month',String(parseInt(parts[1])));setEl('p_day',String(parseInt(parts[2])));}
+  setEl('p_doc_number',v('doc_number'));
+  setEl('p_evang_type',v('evang_type'));
+  var ec=v('evang_count');var ecw=document.getElementById('p_evang_count_wrap');if(ecw){ecw.style.display=ec?'inline':'none';}setEl('p_evang_count',ec);
+  setEl('p_jo',v('q1_jo'));setEl('p_leader',v('q2_leader'));setEl('p_trainer',v('q2_trainer'));setEl('p_trainee1',v('q2_trainee1'));['contact','gospel','target','decision','reject','confirm','believer'].forEach(function(k){setEl('p_'+k,v('t_'+k));});setEl('p_location',v('q3_location'));setEl('p_target_type',v('q3_target_type')||'—');setEl('p_name',v('q3_name'));setEl('p_age',v('q3_age'));document.getElementById('p_marriage_bold').textContent=radio('marriage')||'미혼 / 기혼';document.getElementById('p_gender_bold').textContent=radio('gender')||'남자 / 여자';setEl('p_religion',getReligionValue());setEl('p_job',v('q4_job'));var hv=radio('heaven'),rs=radio('reason');document.getElementById('p_heaven_bold').textContent=hv||'없었고 / 있었고';document.getElementById('p_reason_bold').textContent=rs||'믿음 / 행위 / 불확실 / 대답안함';var saved=v('diag-saved-result');var diagRow=document.getElementById('p_diag_result_row');if(saved){var dp=saved.split(' | ');setEl('p_diag_name',(dp[0]||'').replace('진단: ',''));setEl('p_diag_yj',(dp[1]||'').replace('영접: ',''));setEl('p_diag_final',(dp[2]||'').replace('결과: ',''));diagRow.style.display='block';}else diagRow.style.display='none';document.getElementById('p_section6').style.display=(hv==='있었고'&&rs==='믿음')?'block':'none';setEl('p_testimony6_bold',radio('testimony6')||'이미신자 / 머리신자');document.getElementById('p_section7').style.display=(hv==='없었고'&&rs==='믿음')?'block':'none';setEl('p_testimony7_bold',radio('testimony7')||'확신부족신자 / 비신자');var show8=hv&&rs;document.getElementById('p_section8').style.display=show8?'block':'none';MEMBERS.forEach(function(m){setEl('p_'+m.id+'_part',v('q8_'+m.id+'_part'));document.getElementById('p_'+m.id+'_action_bold').textContent=radio(m.id+'_action')||'하였고 / 참관하였고';});setEl('p_result',v('q8_result'));document.getElementById('p_immed_bold').textContent=radio('immed_nurture')||'했고 / 안했고';var fu=document.querySelector('input[name="followup"]:checked');document.getElementById('p_followup_bold').textContent=fu?fu.value:'—';['q10','q11','q12','q13'].forEach(function(k){var el=document.getElementById('p_'+k);if(el)el.textContent=v(k)||'';});}
+
+function printDoc(){syncPreview();['form-page','history-page'].forEach(function(id){document.getElementById(id).style.display='none';});document.getElementById('preview-page').style.display='block';document.querySelector('.preview-notice').style.display='none';window.print();['form-page','history-page'].forEach(function(id){document.getElementById(id).style.display='';});document.getElementById('preview-page').style.display='';document.querySelector('.preview-notice').style.display='';}
+
+function showStatus(msg,type){var bar=document.getElementById('status-bar');bar.textContent=msg;bar.className='status-bar'+(type?' '+type:'');bar.style.display='block';clearTimeout(bar._t);bar._t=setTimeout(function(){bar.style.display='none';},3200);}
+</script>
+</body>
+</html>
