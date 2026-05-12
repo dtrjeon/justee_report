@@ -708,34 +708,75 @@ function loadDraft(){
 function applyFormData(r){
   var sv=function(id,val){var el=document.getElementById(id);if(el)el.value=val||'';};
   var sr=function(name,val){document.querySelectorAll('input[name="'+name+'"]').forEach(function(el){el.checked=el.value===val;});};
-  if(r.week)sv('report-week',r.week);if(r.date)sv('report-date',r.date);
-  sv('doc_number',r.doc_number);
-  var et=document.getElementById('evang_type');if(et)et.value=r.evang_type||'';
-  sv('evang_count',r.evang_count);
-  var js=document.getElementById('q1_jo');if(js)js.value=r.jo||'';
-  sv('q2_leader',r.leader);sv('q2_trainer',r.trainer);sv('q2_trainee1',r.trainee1);
-  ['contact','gospel','target','decision','reject','confirm','believer'].forEach(function(k){sv('t_'+k,r[k]);});
-  sv('q3_location',r.location);
-  var tt=document.getElementById('q3_target_type');if(tt)tt.value=r.target_type||'';
-  sv('q3_name',r.name);sv('q3_age',r.age);
-  sr('marriage',r.marriage);sr('gender',r.gender);
-  setReligionValue(r.religion||'');sv('q4_job',r.job);
-  sr('heaven',r.heaven);sr('reason',r.reason);sr('yeopjeop',r.yeopjeop);
-  sv('diag-saved-result',r.diag_result);
-  sr('testimony6',r.testimony6);sr('testimony7',r.testimony7);
+
+  // 주차 · 전도일
+  sv('report-week', r.week);
+  sv('report-date', r.date);
+
+  // 문서정보
+  sv('doc_number',  r.doc_number);
+  var et=document.getElementById('evang_type');
+  if(et) et.value=r.evang_type||'';
+  sv('evang_count', r.evang_count);
+
+  // 조 · 팀 구성원
+  var joSel=document.getElementById('q1_jo');
+  if(joSel) joSel.value=r.jo||'';
+  sv('q2_leader',   r.leader);
+  sv('q2_trainer',  r.trainer);
+  sv('q2_trainee1', r.trainee1);
+
+  // 통계
+  ['contact','gospel','target','decision','reject','confirm','believer'].forEach(function(k){
+    sv('t_'+k, r[k]);
+  });
+
+  // 인적정보
+  sv('q3_location', r.location);
+  var tt=document.getElementById('q3_target_type');
+  if(tt) tt.value=r.target_type||'';
+  sv('q3_name', r.name);
+  sv('q3_age',  r.age);
+  sr('marriage', r.marriage);
+  sr('gender',   r.gender);
+
+  // 종교 · 직업
+  setReligionValue(r.religion||'');
+  sv('q4_job', r.job);
+
+  // 확신 · 이유 · 영접
+  sr('heaven',    r.heaven);
+  sr('reason',    r.reason);
+  sr('yeopjeop',  r.yeopjeop);
+  sv('diag-saved-result', r.diag_result);
+  sr('testimony6', r.testimony6);
+  sr('testimony7', r.testimony7);
+
+  // 역할배분
   MEMBERS.forEach(function(m){
-    sv('q8_'+m.id+'_part',r[m.id+'_part']);
-    sr(m.id+'_action',r[m.id+'_action']);
+    sv('q8_'+m.id+'_part', r[m.id+'_part']);
+    sr(m.id+'_action', r[m.id+'_action']);
     var roles=(r[m.id+'_part']||'').split(', ');
-    document.querySelectorAll('input[name="'+m.id+'_role"]').forEach(function(el){el.checked=roles.indexOf(el.value)>-1;});
+    document.querySelectorAll('input[name="'+m.id+'_role"]').forEach(function(el){
+      el.checked=roles.indexOf(el.value)>-1;
+    });
     updateRoleText(m.id);
   });
-  sv('q8_result',r.result);sr('immed_nurture',r.immed_nurture);
-  document.querySelectorAll('input[name="followup"]').forEach(function(el){el.checked=el.value===r.followup;});
+  sv('q8_result', r.result);
+
+  // 양육
+  sr('immed_nurture', r.immed_nurture);
+  document.querySelectorAll('input[name="followup"]').forEach(function(el){
+    el.checked=el.value===r.followup;
+  });
   updateFollowup();
+
+  // 자유기술
   ['q10','q11','q12','q13'].forEach(function(k){sv(k,r[k]);});
+
+  // UI 상태 갱신
   onQ5Change();
-  if(radio('heaven'))document.getElementById('diag-card').style.display='block';
+  if(radio('heaven')) document.getElementById('diag-card').style.display='block';
   syncPreview();
 }
 
@@ -1250,7 +1291,63 @@ function renderHistory(records,src){
   clearSearch();
   var list=document.getElementById('history-list');if(!records||!records.length){list.innerHTML='<div class="empty-state"><span class="es-icon">📄</span><p>제출된 보고서가 없습니다.</p></div>';return;}window._historyRecords=records;list.innerHTML=records.map(function(r,i){var seqLabel=r._seq?'#'+r._seq:'#'+(records.length-i);return'<div class="record-card" onclick="loadRecord('+i+')"><div class="rc-top"><div><div class="rc-title '+src+'"><span class="rc-seq-badge">'+seqLabel+'</span> '+(r.jo?r.jo+'조 ':'')+'현장전도 보고서 <span class="src-badge '+src+'">'+(src==='test'?'TEST':'SERVER')+'</span></div><div class="rc-meta">👑 '+(r.leader||'—')+' &nbsp;👤 '+(r.trainer||'—')+(r.trainee1?', '+r.trainee1:'')+'<br>📍 '+(r.location||'—')+' '+(r.name?r.name+'씨':'')+' '+(r.age?r.age+'세':'')+'</div></div><div class="rc-date">'+(r._savedAt||'')+'</div></div><div class="rc-stats"><span class="stat-chip neutral">접촉 '+(r.contact||0)+'회</span><span class="stat-chip blue">복음제시 '+(r.gospel||0)+'회</span><span class="stat-chip red">결신 '+(r.decision||0)+'명</span></div><button class="load-btn '+src+'" onclick="event.stopPropagation();loadRecord('+i+')">불러오기 →</button></div>';}).join('');}
 
-function loadRecord(idx){var r=window._historyRecords[idx];if(!r)return;var sv=function(id,val){var el=document.getElementById(id);if(el)el.value=val||'';};var sr=function(name,val){document.querySelectorAll('input[name="'+name+'"]').forEach(function(el){el.checked=el.value===val;});};if(r.week)sv('report-week',r.week);if(r.week){var ws=document.getElementById('report-week');if(ws)ws.value=r.week||'';}if(r.date)sv('report-date',r.date);sv('doc_number',r.doc_number);var et=document.getElementById('evang_type');if(et)et.value=r.evang_type||'';sv('evang_count',r.evang_count);var js=document.getElementById('q1_jo');if(js){js.value=r.jo||'';}sv('q2_leader',r.leader);sv('q2_trainer',r.trainer);sv('q2_trainee1',r.trainee1);['contact','gospel','target','decision','reject','confirm','believer'].forEach(function(k){sv('t_'+k,r[k]);});sv('q3_location',r.location);var tt=document.getElementById('q3_target_type');if(tt)tt.value=r.target_type||'';sv('q3_name',r.name);sv('q3_age',r.age);sr('marriage',r.marriage);sr('gender',r.gender);setReligionValue(r.religion||'');sv('q4_job',r.job);sr('heaven',r.heaven);sr('reason',r.reason);sr('yeopjeop',r.yeopjeop);sv('diag-saved-result',r.diag_result);sr('testimony6',r.testimony6);sr('testimony7',r.testimony7);MEMBERS.forEach(function(m){sv('q8_'+m.id+'_part',r[m.id+'_part']);sr(m.id+'_action',r[m.id+'_action']);var roles=(r[m.id+'_part']||'').split(', ');document.querySelectorAll('input[name="'+m.id+'_role"]').forEach(function(el){el.checked=roles.indexOf(el.value)>-1;});updateRoleText(m.id);});sv('q8_result',r.result);sr('immed_nurture',r.immed_nurture);var fuVal=r.followup||'';document.querySelectorAll('input[name="followup"]').forEach(function(el){el.checked=el.value===fuVal;});updateFollowup();['q10','q11','q12','q13'].forEach(function(k){sv(k,r[k]);});onQ5Change();if(radio('heaven'))document.getElementById('diag-card').style.display='block';switchTab('form');showStatus('✅ 기록을 불러왔습니다.','success');}
+function loadRecord(idx){
+  var r=window._historyRecords[idx];
+  if(!r)return;
+  // 서버 레코드 필드명을 applyFormData 형식에 맞게 정규화
+  var data={
+    week:     r.week   || '',
+    date:     r.date   || '',
+    doc_number:  r.doc_number  || '',
+    evang_type:  r.evang_type  || '',
+    evang_count: r.evang_count || '',
+    jo:       r.jo      || '',
+    leader:   r.leader  || '',
+    trainer:  r.trainer || '',
+    trainee1: r.trainee1|| r.trainee || '',
+    contact:  r.contact || '',
+    gospel:   r.gospel  || '',
+    target:   r.target  || '',
+    decision: r.decision|| '',
+    reject:   r.reject  || '',
+    confirm:  r.confirm || '',
+    believer: r.believer|| '',
+    location: r.location|| '',
+    target_type: r.target_type || '',
+    name:     r.name    || '',
+    age:      r.age     || '',
+    marriage: r.marriage|| '',
+    gender:   r.gender  || '',
+    religion: r.religion|| '',
+    job:      r.job     || '',
+    heaven:   r.heaven  || '',
+    reason:   r.reason  || '',
+    yeopjeop: r.yeopjeop|| '',
+    diag_result:  r.diag_result || r.diagResult || '',
+    testimony6:   r.testimony6  || '',
+    testimony7:   r.testimony7  || '',
+    leader_part:   r.leader_part   || r.leaderPart   || '',
+    leader_action: r.leader_action || r.leaderAction  || '',
+    trainer_part:  r.trainer_part  || r.trainerPart   || '',
+    trainer_action:r.trainer_action|| r.trainerAction || '',
+    trainee_part:  r.trainee_part  || r.traineePart   || '',
+    trainee_action:r.trainee_action|| r.traineeAction || '',
+    result:       r.result        || '',
+    immed_nurture:r.immed_nurture || r.immedNurture  || '',
+    followup:     r.followup      || '',
+    q10: r.q10||'', q11: r.q11||'', q12: r.q12||'', q13: r.q13||''
+  };
+  applyFormData(data);
+
+  // 개인전도 드롭다운 처리
+  if(data.evang_type==='개인'||data.evang_type==='관계'||data.evang_type==='QQ'){
+    var wrap=document.getElementById('personal-member-wrap');
+    if(wrap){wrap.style.display='block';buildPersonalMemberSelect();}
+  }
+
+  switchTab('form');
+  showStatus('✅ 기록을 불러왔습니다.','success');
+}
 
 function resetForm(){_lastSavedDiagResult='';localStorage.removeItem(LS_DRAFT);document.querySelectorAll('#form-page input[type=text],#form-page input[type=number],#form-page textarea').forEach(function(el){el.value='';});document.querySelectorAll('#form-page input[type=radio],#form-page input[type=checkbox]').forEach(function(el){el.checked=false;});document.getElementById('report-date').value=new Date().toISOString().split('T')[0];var et=document.getElementById('evang_type');if(et)et.value='';document.getElementById('personal-member-wrap').style.display='none';document.getElementById('personal_member').value='';var js=document.getElementById('q1_jo');if(js)js.value='';setReligionValue('');MEMBERS.forEach(function(m){updateRoleText(m.id);});syncRoleAvailability();updateFollowup();onQ5Change();resetDiagCard();document.getElementById('diag-card').style.display='none';}
 
