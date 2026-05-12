@@ -46,7 +46,7 @@ input[type=text],input[type=number],input[type=date],textarea{background:#fff;bo
 input::placeholder,textarea::placeholder{color:rgba(100,110,140,0.5);}
 textarea{resize:none;min-height:58px;}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;}
+
 .rg{display:flex;gap:7px;flex-wrap:wrap;}
 .rb{flex:1;position:relative;min-width:56px;}
 .rb input[type=radio]{position:absolute;opacity:0;width:100%;height:100%;top:0;left:0;margin:0;cursor:pointer;z-index:1;}
@@ -59,15 +59,15 @@ textarea{resize:none;min-height:58px;}
 /* 통계 그룹1: 접촉횟수 - 진한 파랑 */
 .stats-grp-1{background:#1a3a9e !important;color:#fff !important;}
 .stats-td-1{background:#dce6ff !important;}
-.stats-td-1 input{color:#1a3a9e !important;font-weight:700;}
+.stats-td-1 input,.stats-td-1{color:#1a3a9e !important;font-weight:700;}
 /* 통계 그룹2: 복음제시·전도대상 - 중간 파랑 */
 .stats-grp-2{background:#2050c8 !important;color:#fff !important;}
 .stats-td-2{background:#eaf0ff !important;}
-.stats-td-2 input{color:#2050c8 !important;font-weight:700;}
+.stats-td-2 input,.stats-td-2{color:#2050c8 !important;font-weight:700;}
 /* 통계 그룹3: 결신·보류·확신·이미신자 - 연한 파랑 */
 .stats-grp-3{background:#5c8ae0 !important;color:#fff !important;}
 .stats-td-3{background:#f2f5ff !important;}
-.stats-td-3 input{color:#4070c8 !important;font-weight:700;}
+.stats-td-3 input,.stats-td-3{color:#4070c8 !important;font-weight:700;}
 .note-small{font-size:10px;color:rgba(40,50,90,0.6);margin-top:3px;}
 .multiselect-wrap{position:relative;user-select:none;}
 .ms-trigger{display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid rgba(0,0,20,0.18);border-radius:6px;padding:9px 12px;cursor:pointer;font-size:14px;color:#0f1428;min-height:44px;}
@@ -447,8 +447,8 @@ pre.code-block{background:#1a1e3a;color:#d4d4d4;padding:11px;border-radius:6px;f
     </div>
     <div id="cond7-section" style="display:none;margin-bottom:14px;"><div class="sec-lbl">7. 개인간증을 들었을 때 <span style="font-weight:400;color:rgba(32,80,200,0.4);text-transform:none;letter-spacing:0;">(확신 없음 + 믿음)</span></div>
       <div class="rg">
-        <div class="rb"><input type="radio" name="testimony7" value="확신부족신자" id="t71" onchange="updateDiagFromSubResult();syncPreview();scrollToEl('diag-card');"><label for="t71">확신부족신자</label></div>
-        <div class="rb"><input type="radio" name="testimony7" value="비신자" id="t72b" onchange="updateDiagFromSubResult();syncPreview();scrollToEl('diag-card');"><label for="t72b">비신자</label></div>
+        <div class="rb"><input type="radio" name="testimony7" value="확신부족신자" id="t71" onchange="updateDiagFromSubResult();syncPreview()"><label for="t71">확신부족신자</label></div>
+        <div class="rb"><input type="radio" name="testimony7" value="비신자" id="t72b" onchange="updateDiagFromSubResult();syncPreview()"><label for="t72b">비신자</label></div>
       </div>
     </div>
     <div id="diag-card" style="display:none;">
@@ -551,8 +551,26 @@ pre.code-block{background:#1a1e3a;color:#d4d4d4;padding:11px;border-radius:6px;f
     <div class="doc-item"><div class="doc-item-line"><span class="doc-num">1.</span> <span class="dblank sm" id="p_jo">&nbsp;</span> 현장전도 보고 드리겠습니다.</div></div>
     <div class="doc-item">
       <div class="doc-item-line"><span class="doc-num">2.</span> 저희 팀 훈련자(조장)은 <span class="dblank md" id="p_leader">&nbsp;</span>, 훈련자는 <span class="dblank md" id="p_trainer">&nbsp;</span>, 훈련생은 <span class="dblank md" id="p_trainee1">&nbsp;</span> 입니다.</div>
-      <table class="doc-table" style="margin-top:5px;"><thead><tr><th>접촉횟수</th><th>복음제시</th><th>전도대상자</th><th>결신</th><th>보류/거절</th><th>확신복음제시</th><th>이미신자</th></tr></thead>
-      <tbody><tr><td id="p_contact">&nbsp;</td><td id="p_gospel">&nbsp;</td><td id="p_target">&nbsp;</td><td id="p_decision">&nbsp;</td><td id="p_reject">&nbsp;</td><td id="p_confirm">&nbsp;</td><td id="p_believer">&nbsp;</td></tr></tbody></table>
+      <table class="doc-table" style="margin-top:5px;">
+        <thead><tr>
+          <th class="stats-grp-1">접촉횟수</th>
+          <th class="stats-grp-2">복음제시</th>
+          <th class="stats-grp-2">전도대상자</th>
+          <th class="stats-grp-3">결신</th>
+          <th class="stats-grp-3">보류/거절</th>
+          <th class="stats-grp-3">확신복음제시</th>
+          <th class="stats-grp-3">이미신자</th>
+        </tr></thead>
+        <tbody><tr>
+          <td class="stats-td-1" id="p_contact">&nbsp;</td>
+          <td class="stats-td-2" id="p_gospel">&nbsp;</td>
+          <td class="stats-td-2" id="p_target">&nbsp;</td>
+          <td class="stats-td-3" id="p_decision">&nbsp;</td>
+          <td class="stats-td-3" id="p_reject">&nbsp;</td>
+          <td class="stats-td-3" id="p_confirm">&nbsp;</td>
+          <td class="stats-td-3" id="p_believer">&nbsp;</td>
+        </tr></tbody>
+      </table>
       <p class="doc-note-small">(* 접촉횟수는 현장전도시 모든 만남을 포함합니다.)</p>
     </div>
     <div class="doc-item"><div class="doc-item-line"><span class="doc-num">3.</span> 대상 구분 : ( <span class="dbold" id="p_target_type">—</span> ) &nbsp;·&nbsp; 저희들은 <span class="dblank lg" id="p_location">&nbsp;</span> 에 사시는 <span class="dblank sm" id="p_name">&nbsp;</span> 씨 성을 가진 <span class="dblank xs" id="p_age">&nbsp;</span> 세 되신 ( <span class="dbold" id="p_marriage_bold">미혼 / 기혼</span> )의 ( <span class="dbold" id="p_gender_bold">남자 / 여자</span> ) 분을 만났습니다.</div></div>
@@ -1105,17 +1123,6 @@ function resetQ5(){
   syncPreview();
 }
 
-// ── 자동 스크롤 헬퍼 ──────────────────────────────
-function scrollToEl(id, delay){
-  delay = delay || 200;
-  setTimeout(function(){
-    var el = document.getElementById(id);
-    if(!el) return;
-    var top = el.getBoundingClientRect().top + window.pageYOffset - 60;
-    window.scrollTo({top: top, behavior: 'smooth'});
-  }, delay);
-}
-
 function onQ5Change(){
   var hv=radio('heaven'), rs=radio('reason');
   document.getElementById('cond6-section').style.display=(hv==='있었고'&&rs==='믿음')?'block':'none';
@@ -1138,12 +1145,9 @@ function onQ5Change(){
   syncPreview();
 
   // 5-1 선택 → 5-2로 스크롤
-  if(hv && !rs) { scrollToEl('r1'); return; }
+  if(hv && !rs) { return; }
   // 5-2 선택 → 6번 또는 7번 또는 진단카드로 스크롤
   if(hv && rs){
-    if(hv==='있었고' && rs==='믿음') scrollToEl('cond6-section');
-    else if(hv==='없었고' && rs==='믿음') scrollToEl('cond7-section');
-    else scrollToEl('diag-card');
   }
 }
 
@@ -1161,7 +1165,6 @@ function onTestimony6Change(){
     resetDiagCard();
   }
   // 6번 선택 → 진단카드로 스크롤
-  if(t6) scrollToEl('diag-card');
 }
 
 function onYeopjeopChange(){
@@ -1182,7 +1185,6 @@ function onYeopjeopChange(){
   }
   syncPreview();
   // 영접 선택 → 진단결과 저장 버튼으로 스크롤
-  scrollToEl('diag-card', 150);
 }
 
 function saveDiagResult(){
@@ -1201,9 +1203,6 @@ function saveDiagResult(){
   setTimeout(function(){btn.textContent='진단결과 저장 →'; btn.style.background='';}, 2000);
   showStatus('✅ 진단결과가 통계에 반영되었습니다.','success');
   syncPreview();
-  // 저장 후 → 8번(역할배분) 또는 9번으로 스크롤
-  var nextId = document.getElementById('cond8-section').style.display!=='none' ? 'cond8-section' : 'sec-9';
-  scrollToEl(nextId, 300);
 }
 
 function v(id){var el=document.getElementById(id);return el?el.value:'';}
@@ -1256,11 +1255,79 @@ function loadRecord(idx){var r=window._historyRecords[idx];if(!r)return;var sv=f
 function resetForm(){_lastSavedDiagResult='';localStorage.removeItem(LS_DRAFT);document.querySelectorAll('#form-page input[type=text],#form-page input[type=number],#form-page textarea').forEach(function(el){el.value='';});document.querySelectorAll('#form-page input[type=radio],#form-page input[type=checkbox]').forEach(function(el){el.checked=false;});document.getElementById('report-date').value=new Date().toISOString().split('T')[0];var et=document.getElementById('evang_type');if(et)et.value='';document.getElementById('personal-member-wrap').style.display='none';document.getElementById('personal_member').value='';var js=document.getElementById('q1_jo');if(js)js.value='';setReligionValue('');MEMBERS.forEach(function(m){updateRoleText(m.id);});syncRoleAvailability();updateFollowup();onQ5Change();resetDiagCard();document.getElementById('diag-card').style.display='none';}
 
 function setEl(id,val){var el=document.getElementById(id);if(el)el.textContent=(val||'').trim()||'\u00a0';}
-function syncPreview(){var dv=v('report-date');if(dv){var parts=dv.split('-');setEl('p_year',parts[0].slice(2));setEl('p_month',String(parseInt(parts[1])));setEl('p_day',String(parseInt(parts[2])));}
+function syncPreview(){
+  // 전도일 날짜 표시
+  var dv=v('report-date');
+  if(dv){
+    var parts=dv.split('T')[0].split('-'); // ISO 형식 대비 T 앞만 사용
+    if(parts.length===3){
+      setEl('p_year',parts[0].slice(2));
+      setEl('p_month',String(parseInt(parts[1])));
+      setEl('p_day',String(parseInt(parts[2])));
+    }
+  }
+  // 문서번호 · 복음제시
   setEl('p_doc_number',v('doc_number'));
   setEl('p_evang_type',v('evang_type'));
-  var ec=v('evang_count');var ecw=document.getElementById('p_evang_count_wrap');if(ecw){ecw.style.display=ec?'inline':'none';}setEl('p_evang_count',ec);
-  setEl('p_jo',v('q1_jo'));setEl('p_leader',v('q2_leader'));setEl('p_trainer',v('q2_trainer'));setEl('p_trainee1',v('q2_trainee1'));['contact','gospel','target','decision','reject','confirm','believer'].forEach(function(k){setEl('p_'+k,v('t_'+k));});setEl('p_location',v('q3_location'));setEl('p_target_type',v('q3_target_type')||'—');setEl('p_name',v('q3_name'));setEl('p_age',v('q3_age'));document.getElementById('p_marriage_bold').textContent=radio('marriage')||'미혼 / 기혼';document.getElementById('p_gender_bold').textContent=radio('gender')||'남자 / 여자';setEl('p_religion',getReligionValue());setEl('p_job',v('q4_job'));var hv=radio('heaven'),rs=radio('reason');document.getElementById('p_heaven_bold').textContent=hv||'없었고 / 있었고';document.getElementById('p_reason_bold').textContent=rs||'믿음 / 행위 / 불확실 / 대답안함';var saved=v('diag-saved-result');var diagRow=document.getElementById('p_diag_result_row');if(saved){var dp=saved.split(' | ');setEl('p_diag_name',(dp[0]||'').replace('진단: ',''));setEl('p_diag_yj',(dp[1]||'').replace('영접: ',''));setEl('p_diag_final',(dp[2]||'').replace('결과: ',''));diagRow.style.display='block';}else diagRow.style.display='none';document.getElementById('p_section6').style.display=(hv==='있었고'&&rs==='믿음')?'block':'none';setEl('p_testimony6_bold',radio('testimony6')||'이미신자 / 머리신자');document.getElementById('p_section7').style.display=(hv==='없었고'&&rs==='믿음')?'block':'none';setEl('p_testimony7_bold',radio('testimony7')||'확신부족신자 / 비신자');var show8=hv&&rs;document.getElementById('p_section8').style.display=show8?'block':'none';MEMBERS.forEach(function(m){setEl('p_'+m.id+'_part',v('q8_'+m.id+'_part'));document.getElementById('p_'+m.id+'_action_bold').textContent=radio(m.id+'_action')||'하였고 / 참관하였고';});setEl('p_result',v('q8_result'));document.getElementById('p_immed_bold').textContent=radio('immed_nurture')||'했고 / 안했고';var fu=document.querySelector('input[name="followup"]:checked');document.getElementById('p_followup_bold').textContent=fu?fu.value:'—';['q10','q11','q12','q13'].forEach(function(k){var el=document.getElementById('p_'+k);if(el)el.textContent=v(k)||'';});}
+  var ec=v('evang_count');
+  var ecw=document.getElementById('p_evang_count_wrap');
+  if(ecw){ecw.style.display=ec?'inline':'none';}
+  setEl('p_evang_count',ec);
+  // 1번: 조
+  setEl('p_jo',v('q1_jo'));
+  // 2번: 팀 구성원
+  setEl('p_leader',v('q2_leader'));
+  setEl('p_trainer',v('q2_trainer'));
+  setEl('p_trainee1',v('q2_trainee1'));
+  // 통계
+  ['contact','gospel','target','decision','reject','confirm','believer'].forEach(function(k){setEl('p_'+k,v('t_'+k));});
+  // 3번: 인적정보
+  setEl('p_location',v('q3_location'));
+  setEl('p_target_type',v('q3_target_type')||'—');
+  setEl('p_name',v('q3_name'));
+  setEl('p_age',v('q3_age'));
+  document.getElementById('p_marriage_bold').textContent=radio('marriage')||'미혼 / 기혼';
+  document.getElementById('p_gender_bold').textContent=radio('gender')||'남자 / 여자';
+  // 4번: 종교배경 · 직업 (순서 주의: religion → job)
+  setEl('p_religion',getReligionValue());
+  setEl('p_job',v('q4_job'));
+  // 5번: 확신 · 이유
+  var hv=radio('heaven'),rs=radio('reason');
+  document.getElementById('p_heaven_bold').textContent=hv||'없었고 / 있었고';
+  document.getElementById('p_reason_bold').textContent=rs||'믿음 / 행위 / 불확실 / 대답안함';
+  // 진단결과
+  var saved=v('diag-saved-result');
+  var diagRow=document.getElementById('p_diag_result_row');
+  if(saved){
+    var dp=saved.split(' | ');
+    setEl('p_diag_name',(dp[0]||'').replace('진단: ',''));
+    setEl('p_diag_yj',(dp[1]||'').replace('영접: ',''));
+    setEl('p_diag_final',(dp[2]||'').replace('결과: ',''));
+    diagRow.style.display='block';
+  }else{diagRow.style.display='none';}
+  // 6·7번 조건 표시
+  document.getElementById('p_section6').style.display=(hv==='있었고'&&rs==='믿음')?'block':'none';
+  setEl('p_testimony6_bold',radio('testimony6')||'이미신자 / 머리신자');
+  document.getElementById('p_section7').style.display=(hv==='없었고'&&rs==='믿음')?'block':'none';
+  setEl('p_testimony7_bold',radio('testimony7')||'확신부족신자 / 비신자');
+  // 8번: 역할배분
+  var show8=hv&&rs;
+  document.getElementById('p_section8').style.display=show8?'block':'none';
+  MEMBERS.forEach(function(m){
+    setEl('p_'+m.id+'_part',v('q8_'+m.id+'_part'));
+    document.getElementById('p_'+m.id+'_action_bold').textContent=radio(m.id+'_action')||'하였고 / 참관하였고';
+  });
+  setEl('p_result',v('q8_result'));
+  // 9번: 양육
+  document.getElementById('p_immed_bold').textContent=radio('immed_nurture')||'했고 / 안했고';
+  var fu=document.querySelector('input[name="followup"]:checked');
+  document.getElementById('p_followup_bold').textContent=fu?fu.value:'—';
+  // 10~13번
+  ['q10','q11','q12','q13'].forEach(function(k){
+    var el=document.getElementById('p_'+k);
+    if(el)el.textContent=v(k)||'';
+  });
+}
 
 function printDoc(){syncPreview();['form-page','history-page'].forEach(function(id){document.getElementById(id).style.display='none';});document.getElementById('preview-page').style.display='block';document.querySelector('.preview-notice').style.display='none';window.print();['form-page','history-page'].forEach(function(id){document.getElementById(id).style.display='';});document.getElementById('preview-page').style.display='';document.querySelector('.preview-notice').style.display='';}
 
