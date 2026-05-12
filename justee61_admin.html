@@ -528,7 +528,7 @@ const MEMBERS=[
 
 // ── 설정 ────────────────────────────────────────────────────────────────────
 let CFG={
-  url: localStorage.getItem('mon_url')||'https://script.google.com/macros/s/AKfycbyGElQxOqvD4xTKG8NV0_U6ISXOtah_KnSI3dxGFAsGVkF5MwZbm9CsDsLVbUM6c284/exec',
+  url: localStorage.getItem('mon_url')||'https://script.google.com/macros/s/AKfycbyeZ9A6J6rBCsgN0mLo3N7xD7HYBWmqMlyoAzHSy1sm_yxroRmaKiz7W39a-ri-6lSL/exec',
   title: localStorage.getItem('mon_title')||'61기 수주반',
   groups: JSON.parse(localStorage.getItem('mon_groups')||'null') || [
     {id:'A',name:'A그룹',leader:''},
@@ -632,21 +632,24 @@ function parseRecords(raw){
   return raw.map(function(r){
     var v=Object.values(r);
     return{
-      savedAt:v[0]||'', jo:v[1]||'', leader:v[2]||'', trainer:v[3]||'', trainee:v[4]||'',
-      contact:num(v[5]), gospel:num(v[6]), target:num(v[7]), decision:num(v[8]),
-      reject:num(v[9]), confirm:num(v[10]), believer:num(v[11]),
-      location:v[12]||'', name:v[13]||'', age:v[14]||'',
-      marriage:v[15]||'', gender:v[16]||'', religion:v[17]||'', job:v[18]||'',
-      heaven:v[19]||'', reason:v[20]||'', yeopjeop:v[21]||'',
-      diagResult:v[22]||'', testimony6:v[23]||'', testimony7:v[24]||'',
-      leaderPart:v[25]||'', leaderAction:v[26]||'',
-      trainerPart:v[27]||'', trainerAction:v[28]||'',
-      traineePart:v[29]||'', traineeAction:v[30]||'',
-      result:v[31]||'', immedNurture:v[32]||'', followup:v[33]||'',
-      q10:v[34]||'', q11:v[35]||'', q12:v[36]||'', q13:v[37]||'',
-      week:v[38], date:v[39]||'',
-      docNumber:v[40]||'', evangType:v[41]||'', evangCount:num(v[42]),
-      relationMember:v[43]||'', followupReason:v[44]||''
+      savedAt:v[0]||'',
+      week:v[1], date:v[2]||'', docNumber:v[3]||'', evangType:v[4]||'', evangCount:num(v[5]),
+      jo:v[6]||'', leader:v[7]||'', trainer:v[8]||'', trainee:v[9]||'',
+      contact:num(v[10]), gospel:num(v[11]), target:num(v[12]), decision:num(v[13]),
+      reject:num(v[14]), confirm:num(v[15]), believer:num(v[16]),
+      location:v[17]||'', name:v[18]||'', age:v[19]||'',
+      marriage:v[20]||'', gender:v[21]||'',
+      meetPlace:v[22]||'', gospelPlace:v[23]||'',
+      targetType:v[24]||'', relationMember:v[25]||'',
+      religion:v[26]||'', job:v[27]||'',
+      heaven:v[28]||'', reason:v[29]||'', yeopjeop:v[30]||'',
+      diagResult:v[31]||'', testimony6:v[32]||'', testimony7:v[33]||'',
+      leaderPart:v[34]||'', leaderAction:v[35]||'',
+      trainerPart:v[36]||'', trainerAction:v[37]||'',
+      traineePart:v[38]||'', traineeAction:v[39]||'',
+      result:v[40]||'', immedNurture:v[41]||'', followup:v[42]||'',
+      followupReason:v[43]||'',
+      q10:v[44]||'', q11:v[45]||'', q12:v[46]||'', q13:v[47]||''
     };
   });
 }
