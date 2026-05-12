@@ -711,8 +711,19 @@ function startAutoSave(){
 function loadDraft(){
   try{
     var d=JSON.parse(localStorage.getItem(LS_DRAFT));
-    if(!d)return false;
-    if(!confirm('임시저장된 내용이 있습니다.\n불러오시겠습니까?\n(저장일시: '+d._draftAt+')'))return false;
+    if(!d) return false;
+
+    // 오염된 draft 감지: doc_number에 날짜 형식이 들어있거나
+    // leader에 숫자(조번호)만 있는 경우 → 삭제 후 무시
+    var isCorrupted = false;
+    if(d.doc_number && /^\d{4}-\d{2}-\d{2}T/.test(d.doc_number)) isCorrupted = true;
+    if(d.leader && /^\d+$/.test(String(d.leader).trim())) isCorrupted = true;
+    if(isCorrupted){
+      localStorage.removeItem(LS_DRAFT);
+      return false;
+    }
+
+    if(!confirm('임시저장된 내용이 있습니다.\n불러오시겠습니까?\n(저장일시: '+d._draftAt+')')) return false;
     applyFormData(d);
     localStorage.removeItem(LS_DRAFT);
     showStatus('📝 임시저장 내용을 불러왔습니다.','info');
@@ -1371,7 +1382,73 @@ function clearSearch(){
 }
 
 async function loadHistory(){await loadServerHistory();}
-async function loadServerHistory(){var list=document.getElementById('history-list');if(!scriptUrl){list.innerHTML='<div class="empty-state"><span class="es-icon">🔗</span><p>구글 시트가 연결되지 않았습니다.<br><button onclick="openModal()" style="margin-top:8px;background:#2050c8;color:#fff;border:none;border-radius:6px;padding:7px 16px;cursor:pointer;font-size:12px;font-family:\'Noto Sans KR\',sans-serif;">⚙️ 지금 연결하기</button></p></div>';return;}list.innerHTML='<div class="empty-state"><span class="es-icon">⏳</span><p>불러오는 중...</p></div>';try{var res=await fetch(scriptUrl+'?action=get');var json=await res.json();if(json.status!=='ok')throw new Error(json.message);var records=(json.records||[]).map(function(r,idx){var v=Object.values(r);return{_savedAt:v[0]||'',_source:'server',_seq:r._seq||null,jo:v[1],leader:v[2],trainer:v[3],trainee1:v[4],contact:v[5],gospel:v[6],target:v[7],decision:v[8],reject:v[9],confirm:v[10],believer:v[11],location:v[12],name:v[13],age:v[14],marriage:v[15],gender:v[16],religion:v[17],job:v[18],heaven:v[19],reason:v[20],yeopjeop:v[21],diag_result:v[22],testimony6:v[23],testimony7:v[24],leader_part:v[25],leader_action:v[26],trainer_part:v[27],trainer_action:v[28],trainee_part:v[29],trainee_action:v[30],result:v[31],immed_nurture:v[32],followup:v[33],q10:v[34],q11:v[35],q12:v[36],q13:v[37],week:v[38],date:v[39],doc_number:v[40]||'',evang_type:v[41]||'',evang_count:v[42]||'',relation_member:v[43]||'',followup_reason:v[44]||''};});renderHistory(records,'server');}catch(e){list.innerHTML='<div class="empty-state"><span class="es-icon">❌</span><p>불러오기 실패: '+e.message+'</p></div>';updateScbState('error');}}
+async function loadServerHistory(){
+  var list=document.getElementById('history-list');
+  if(!scriptUrl){
+    list.innerHTML='<div class="empty-state"><span class="es-icon">🔗</span><p>구글 시트가 연결되지 않았습니다.<br><button onclick="openModal()" style="margin-top:8px;background:#2050c8;color:#fff;border:none;border-radius:6px;padding:7px 16px;cursor:pointer;font-size:12px;font-family:\'Noto Sans KR\',sans-serif;">⚙️ 지금 연결하기</button></p></div>';
+    return;
+  }
+  list.innerHTML='<div class="empty-state"><span class="es-icon">⏳</span><p>불러오는 중...</p></div>';
+  try{
+    var res=await fetch(scriptUrl+'?action=get');
+    var json=await res.json();
+    if(json.status!=='ok') throw new Error(json.message);
+    var records=(json.records||[]).map(function(r){
+      return {
+        _savedAt:      r['제출일시']             ||'',
+        _source:       'server',
+        jo:            String(r['조']            ||''),
+        leader:        r['조장']                 ||'',
+        trainer:       r['훈련자']               ||'',
+        trainee1:      r['훈련생']               ||'',
+        contact:       r['접촉횟수']             ||0,
+        gospel:        r['복음제시']             ||0,
+        target:        r['전도대상']             ||0,
+        decision:      r['결신']                 ||0,
+        reject:        r['보류거절']             ||0,
+        confirm:       r['확신복음']             ||0,
+        believer:      r['이미신자']             ||0,
+        location:      r['거주지역']             ||'',
+        name:          r['성씨']                 ||'',
+        age:           r['나이']                 ||'',
+        marriage:      r['결혼여부']             ||'',
+        gender:        r['성별']                 ||'',
+        religion:      r['종교배경']             ||'',
+        job:           r['직업']                 ||'',
+        heaven:        r['천국확신']             ||'',
+        reason:        r['이유대답']             ||'',
+        yeopjeop:      r['영접여부']             ||'',
+        diag_result:   r['진단결과']             ||'',
+        testimony6:    r['간증6']                ||'',
+        testimony7:    r['간증7']                ||'',
+        leader_part:   r['조장역할']             ||'',
+        leader_action: r['조장행동']             ||'',
+        trainer_part:  r['훈련자역할']           ||'',
+        trainer_action:r['훈련자행동']           ||'',
+        trainee_part:  r['훈련생역할']           ||'',
+        trainee_action:r['훈련생행동']           ||'',
+        result:        r['결과']                 ||'',
+        immed_nurture: r['즉석양육']             ||'',
+        followup:      r['후속양육']             ||'',
+        q10:           r['성령경험교훈']         ||'',
+        q11:           r['문제점']               ||'',
+        q12:           r['기도제목']             ||'',
+        q13:           r['기타']                 ||'',
+        week:          String(r['주차']          ||''),
+        date:          r['전도일']               ||'',
+        doc_number:    r['문서번호']             ||'',
+        evang_type:    r['전도유형']             ||'',
+        evang_count:   r['복음제시횟수']         ||'',
+        relation_member: r['관계(대상자모신분)'] ||'',
+        followup_reason: r['하지못함사유']       ||'',
+      };
+    });
+    renderHistory(records,'server');
+  }catch(e){
+    list.innerHTML='<div class="empty-state"><span class="es-icon">❌</span><p>불러오기 실패: '+e.message+'</p></div>';
+    updateScbState('error');
+  }
+}
 function renderHistory(records,src){
   // 검색바 표시 (기록 있을 때만)
   var bar=document.getElementById('search-bar');
