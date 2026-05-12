@@ -951,7 +951,7 @@ function ok(data){return ContentService.createTextOutput(JSON.stringify(Object.a
 function error(msg){return ContentService.createTextOutput(JSON.stringify({status:'error',message:msg})).setMimeType(ContentService.MimeType.JSON);}</pre>
       <button type="button" onclick="copyCode()" style="margin-top:6px;background:#2050c8;color:#fff;border:none;border-radius:4px;padding:4px 12px;font-size:11px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;">📋 코드 복사</button>
     </details>
-    <input type="url" id="script-url-input" placeholder="https://script.google.com/macros/s/AKfycbypxiCgaEIyej8F0UTnBf9AWS2_vcWv-GudBkljTSDHNB1w2bX6iUMCTqZcf_QSHI5N/exec">
+    <input type="url" id="script-url-input" placeholder="https://script.google.com/macros/s/AKfycbzfrn7I_jgCOo1ahLJYGQSm24-UVW7FICBfl16TUH3tpD1Nv-wrdk1kELQkzCJPf6Pf/exec">
     <div class="modal-btns">
       <button type="button" class="btn-cancel" onclick="closeModal()">취소</button>
       <button type="button" class="btn-save" onclick="saveScriptUrl()">저장 및 연결</button>
@@ -1017,7 +1017,7 @@ const ROLES=['서론','은혜','인간','하나님','그리스도','믿음','결
 const MEMBERS=[{id:'leader',label:'훈련자(조장)',color:'#1a3a9e'},{id:'trainer',label:'훈련자',color:'#2050c8'},{id:'trainee',label:'훈련생',color:'#5c7cbb'}];
 const DIAG_MAP={'있었고_믿음':{diag:'머리신자 / 이미신자',badge:'orange'},'있었고_etc':{diag:'착각비신자',badge:'red'},'없었고_믿음':{diag:'확신부족 / 비신자',badge:'blue-purple'},'없었고_etc':{diag:'비신자',badge:'purple'}};
 let currentMode='server';
-let scriptUrl=localStorage.getItem('apps_script_url')||'https://script.google.com/macros/s/AKfycbyeZ9A6J6rBCsgN0mLo3N7xD7HYBWmqMlyoAzHSy1sm_yxroRmaKiz7W39a-ri-6lSL/exec';
+let scriptUrl=localStorage.getItem('apps_script_url')||'https://script.google.com/macros/s/AKfycbzfrn7I_jgCOo1ahLJYGQSm24-UVW7FICBfl16TUH3tpD1Nv-wrdk1kELQkzCJPf6Pf/exec';
 var _lastSavedDiagResult='';
 
 var _autoSaveTimer=null;
