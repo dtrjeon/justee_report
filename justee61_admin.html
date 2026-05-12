@@ -463,7 +463,11 @@ tr:last-child td{border-bottom:none;}
     <div style="font-size:10px;color:var(--text3);margin-bottom:8px;">형식: <b>기수, 그룹, 조, 이름, 단계</b> (CSV/TSV). 기수 변경 시 전체 초기화.</div>
     <input type="file" id="member-file" accept=".csv,.tsv,.txt" style="width:100%;font-size:11px;margin-bottom:6px;" onchange="previewMemberFile(this)">
     <div id="member-preview" style="font-size:10px;color:var(--text2);background:#f7f9ff;border-radius:6px;padding:8px;display:none;max-height:130px;overflow-y:auto;margin-bottom:6px;"></div>
-    <button class="modal-btn ok" style="width:100%;margin-bottom:0;" onclick="applyMemberUpload()">✅ 구성원 적용</button>
+    <button class="modal-btn ok" style="width:100%;margin-bottom:6px;" onclick="applyMemberUpload()">✅ 구성원 적용 + 서버동기화</button>
+    <div style="display:flex;gap:6px;">
+      <button class="modal-btn" style="flex:1;font-size:11px;" onclick="syncJoFromServer()">☁️ 서버에서 불러오기</button>
+      <button class="modal-btn" style="flex:1;font-size:11px;" onclick="syncJoToServer()">📤 서버로 저장</button>
+    </div>
 
     <hr class="modal-divider">
     <div style="font-size:11px;font-weight:700;color:var(--primary);margin-bottom:10px;">그룹 편성 설정</div>
@@ -524,7 +528,7 @@ const MEMBERS=[
 
 // ── 설정 ────────────────────────────────────────────────────────────────────
 let CFG={
-  url: localStorage.getItem('mon_url')||'https://script.google.com/macros/s/AKfycbxd5QgrYLwxw3lMFfVJMrd6uAaPj-grnzGYTDa54qqqUvFNKwBwZrUrJBt1vOB6A0wb/exec',
+  url: localStorage.getItem('mon_url')||'https://script.google.com/macros/s/AKfycbyvcsscv_1fGOif-aoVenhPBSh-NH-wmstHtkPZWWN-c8WWYhZhI8XAXUhw1jrpcekW/exec',
   title: localStorage.getItem('mon_title')||'61기 수주반',
   groups: JSON.parse(localStorage.getItem('mon_groups')||'null') || [
     {id:'A',name:'A그룹',leader:''},
@@ -1137,6 +1141,56 @@ function applyMemberUpload(){
   buildJoAssign();
   showToast('✅ 구성원 적용 완료 ('+MEMBERS.length+'명)');
   renderAll();
+  // 서버 동기화
+  syncJoToServer();
+}
+
+// ── 조정보 서버 동기화 ──────────────────────────────────────────────────────
+async function syncJoFromServer(){
+  if(!CFG.url){showToast('⚠️ 구글 시트 URL을 먼저 설정하세요.');return;}
+  showToast('⏳ 서버에서 조정보 불러오는 중...');
+  try{
+    var res=await fetch(CFG.url+'?action=get_jo');
+    var json=await res.json();
+    if(json.status==='ok'&&json.joData&&json.joData.length){
+      // MEMBERS 배열 재구성 (조별 리더/훈련자/훈련생)
+      var newMembers=[];
+      json.joData.forEach(function(j){
+        var grp=CFG.joGroup[j.jo]||'A';
+        if(j.leader) newMembers.push({jo:Number(j.jo),name:j.leader,role:'리더',step:'',group:grp});
+        if(j.trainer) newMembers.push({jo:Number(j.jo),name:j.trainer,role:'훈련자',step:'',group:grp});
+        if(j.trainee) newMembers.push({jo:Number(j.jo),name:j.trainee,role:'훈련생',step:'',group:grp});
+      });
+      MEMBERS.length=0;
+      newMembers.forEach(function(m){MEMBERS.push(m);});
+      localStorage.setItem('mon_members',JSON.stringify(MEMBERS));
+      buildGroupSettings();
+      buildJoAssign();
+      renderAll();
+      showToast('✅ 조정보 불러오기 완료 ('+json.joData.length+'개 조)');
+    } else {
+      showToast('서버에 저장된 조정보가 없습니다.');
+    }
+  }catch(e){showToast('❌ 조정보 불러오기 실패: '+e.message);}
+}
+
+async function syncJoToServer(){
+  if(!CFG.url){showToast('⚠️ 구글 시트 URL을 먼저 설정하세요.');return;}
+  // MEMBERS에서 조별 데이터 추출
+  var joMap={};
+  MEMBERS.forEach(function(m){
+    if(!joMap[m.jo]) joMap[m.jo]={jo:String(m.jo),leader:'',trainer:'',trainee:''};
+    if(m.role==='리더') joMap[m.jo].leader=m.name;
+    else if(m.role==='훈련자') joMap[m.jo].trainer=m.name;
+    else if(m.role==='훈련생') joMap[m.jo].trainee=m.name;
+  });
+  var joArray=Object.values(joMap).sort(function(a,b){return Number(a.jo)-Number(b.jo);});
+  try{
+    var res=await fetch(CFG.url,{method:'POST',body:JSON.stringify({action:'save_jo',joData:joArray})});
+    var json=await res.json();
+    if(json.status==='ok') showToast('✅ 조정보 서버 동기화 완료');
+    else showToast('❌ 서버 저장 실패: '+json.message);
+  }catch(e){showToast('❌ 서버 저장 실패: '+e.message);}
 }
 
 // ── 탭 전환 ──────────────────────────────────────────────────────────────────────
