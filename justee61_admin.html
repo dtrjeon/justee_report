@@ -528,7 +528,7 @@ const MEMBERS=[
 
 // ── 설정 ────────────────────────────────────────────────────────────────────
 let CFG={
-  url: localStorage.getItem('mon_url')||'https://script.google.com/macros/s/AKfycbyvcsscv_1fGOif-aoVenhPBSh-NH-wmstHtkPZWWN-c8WWYhZhI8XAXUhw1jrpcekW/exec',
+  url: localStorage.getItem('mon_url')||'https://script.google.com/macros/s/AKfycbyGElQxOqvD4xTKG8NV0_U6ISXOtah_KnSI3dxGFAsGVkF5MwZbm9CsDsLVbUM6c284/exec',
   title: localStorage.getItem('mon_title')||'61기 수주반',
   groups: JSON.parse(localStorage.getItem('mon_groups')||'null') || [
     {id:'A',name:'A그룹',leader:''},
@@ -644,8 +644,9 @@ function parseRecords(raw){
       traineePart:v[29]||'', traineeAction:v[30]||'',
       result:v[31]||'', immedNurture:v[32]||'', followup:v[33]||'',
       q10:v[34]||'', q11:v[35]||'', q12:v[36]||'', q13:v[37]||'',
-      week:num(v[38]), date:v[39]||'',
-      docNumber:v[40]||'', evangType:v[41]||'', evangCount:num(v[42])
+      week:v[38], date:v[39]||'',
+      docNumber:v[40]||'', evangType:v[41]||'', evangCount:num(v[42]),
+      relationMember:v[43]||'', followupReason:v[44]||''
     };
   });
 }
